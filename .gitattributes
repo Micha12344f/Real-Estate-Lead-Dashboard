@@ -1,0 +1,4 @@
+# Keep shell scripts LF so they run on Linux runners/hosts regardless of the
+# developer's OS.
+*.sh text eol=lf
+*.bash text eol=lf

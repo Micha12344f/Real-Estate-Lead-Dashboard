@@ -1,0 +1,211 @@
+{
+  "logo_url": "",
+  "questions": [
+    {
+      "id": "guest_name",
+      "type": "name",
+      "label": "What is your name?",
+      "required": true,
+      "identityField": "name"
+    },
+    {
+      "id": "guest_email",
+      "type": "email",
+      "label": "What is your email address?",
+      "subtitle": "We'll use this to send you the next steps",
+      "required": true,
+      "placeholder": "you@example.com",
+      "identityField": "email"
+    },
+    {
+      "id": "guest_phone",
+      "type": "tel",
+      "label": "What is your phone number?",
+      "subtitle": "Select your country code and enter your local number",
+      "required": true,
+      "identityField": "phone"
+    },
+    {
+      "id": "guest_property_address",
+      "type": "select",
+      "label": "Which property are you interested in?",
+      "subtitle": "Select from our currently available properties",
+      "required": true,
+      "identityField": "propertyAddress"
+    },
+    {
+      "id": "move_timing",
+      "type": "radio",
+      "label": "When are you looking to move?",
+      "required": true,
+      "options": [
+        {
+          "label": "Within 1 week",
+          "value": "Within 1 week"
+        },
+        {
+          "label": "Within 2 weeks",
+          "value": "Within 2 weeks"
+        },
+        {
+          "label": "Within 3 weeks",
+          "value": "Within 3 weeks"
+        },
+        {
+          "label": "Within 4 weeks",
+          "value": "Within 4 weeks"
+        },
+        {
+          "label": "After a month",
+          "value": "After a month"
+        }
+      ]
+    },
+    {
+      "id": "monthly_budget",
+      "type": "stepper",
+      "label": "What's your monthly budget?",
+      "hint": "£",
+      "required": true,
+      "step": 50,
+      "min": 0,
+      "max": 10000,
+      "start": 1500,
+      "unit": "£"
+    },
+    {
+      "id": "rental_duration",
+      "type": "radio",
+      "label": "How long do you want to rent for?",
+      "required": true,
+      "options": [
+        {
+          "label": "1 - 3 months",
+          "value": "1 - 3 months"
+        },
+        {
+          "label": "3 - 6 months",
+          "value": "3 - 6 months"
+        },
+        {
+          "label": "6 months to 1 year",
+          "value": "6 months to 1 year"
+        },
+        {
+          "label": "Over 1 year",
+          "value": "Over 1 year"
+        }
+      ]
+    },
+    {
+      "id": "household_income",
+      "type": "stepper",
+      "label": "What is your household income?",
+      "hint": "£",
+      "required": true,
+      "step": 5000,
+      "min": 0,
+      "max": 1000000,
+      "start": 50000,
+      "unit": "£"
+    },
+    {
+      "id": "income_proof",
+      "type": "radio",
+      "label": "Can you provide proof of income?",
+      "subtitle": "3 months payslips or accounts",
+      "required": true,
+      "options": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ]
+    },
+    {
+      "id": "occupants",
+      "type": "number",
+      "label": "How many occupants are you anticipating to move in with (including yourself and children)?",
+      "required": true,
+      "min": 1,
+      "max": 20,
+      "placeholder": "e.g. 2"
+    },
+    {
+      "id": "pets",
+      "type": "radio",
+      "label": "Do you have any pets?",
+      "required": true,
+      "options": [
+        {
+          "label": "No",
+          "value": "No"
+        },
+        {
+          "label": "Yes - 1 cat or dog",
+          "value": "Yes - 1 pet"
+        },
+        {
+          "label": "Yes - multiple or larger pets",
+          "value": "Yes - multiple"
+        }
+      ]
+    },
+    {
+      "id": "smoke_vape",
+      "type": "radio",
+      "label": "Do any of the occupants smoke?",
+      "required": true,
+      "options": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ]
+    },
+    {
+      "id": "adverse_credit",
+      "type": "radio",
+      "label": "Do you have any CCJs, IVAs, or adverse credit history?",
+      "required": true,
+      "options": [
+        {
+          "label": "No",
+          "value": "No"
+        },
+        {
+          "label": "Yes, but settled or expired",
+          "value": "Yes, settled"
+        },
+        {
+          "label": "Yes, active or unsatisfied",
+          "value": "Yes, active"
+        }
+      ]
+    },
+    {
+      "id": "booking_opt_in",
+      "type": "radio",
+      "label": "Would you like to book a viewing?",
+      "required": true,
+      "options": [
+        {
+          "label": "Yes, book a viewing",
+          "value": "opt_in"
+        },
+        {
+          "label": "No, not at this time",
+          "value": "opt_out"
+        }
+      ]
+    }
+  ]
+}

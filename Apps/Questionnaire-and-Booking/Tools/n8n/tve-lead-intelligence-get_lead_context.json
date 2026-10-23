@@ -1,0 +1,12 @@
+{
+  "name": "TVE Agent Tool - Get Lead Context",
+  "nodes": [
+    {"id":"66ea7451-b99f-412e-b1a1-3c3d03f02aba","name":"Webhook","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,300],"parameters":{"httpMethod":"POST","path":"tve-agent/tools/get_lead_context","responseMode":"responseNode","authentication":"headerAuth","options":{}},"credentials":{"httpHeaderAuth":{"id":"SCWfh3t3hgnxmMF1","name":"TVE Webhook Auth"}},"webhookId":"1f2103ca-401e-4f78-a3c2-1d83aebf9332"},
+    {"id":"4ac8d83d-38b0-4caa-9ab9-cbc54e3a014c","name":"Validate request","type":"n8n-nodes-base.code","typeVersion":2,"position":[220,300],"parameters":{"jsCode":"const b=$json.body??$json;const id=Number(b.contact_id);if(!Number.isInteger(id)||id<1)throw Error('contact_id must be a positive integer');return [{json:{id}}];","mode":"runOnceForAllItems"}},
+    {"id":"411300d0-b44b-4590-8c3f-2f5080590925","name":"Get lead detail","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[440,300],"parameters":{"method":"GET","url":"={{ 'https://tve-api.hedgedge.info/dashboard/leads/' + $('Validate request').first().json.id }}","authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth","options":{"timeout":30000},"headerParameters":{"parameters":[{"name":"User-Agent","value":"Mozilla/5.0 TVE-Agent"}]},"sendHeaders":true,"specifyHeaders":"keypair"},"credentials":{"httpHeaderAuth":{"id":"owO7jp5b0fldyqP0","name":"TVE Dashboard API - Agent"}}},
+    {"id":"a456e07f-c899-4e75-9e4a-35b717ff5f80","name":"Compact response","type":"n8n-nodes-base.code","typeVersion":2,"position":[660,300],"parameters":{"jsCode":"const d={...$json};for(const k of ['raw_email_body','email','phone','links','tokens'])delete d[k];return [{json:{ok:true,data:d,summary:`Loaded safe context for lead ${d.id}.`}}];","mode":"runOnceForAllItems"}},
+    {"id":"a24a6e5c-6b98-44f2-b7e7-fe9ff55dd88c","name":"Respond to Webhook","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[880,300],"parameters":{"respondWith":"json","responseBody":"={{ $json }}","options":{}}}
+  ],
+  "connections": {"Webhook":{"main":[[{"node":"Validate request","type":"main","index":0}]]},"Validate request":{"main":[[{"node":"Get lead detail","type":"main","index":0}]]},"Get lead detail":{"main":[[{"node":"Compact response","type":"main","index":0}]]},"Compact response":{"main":[[{"node":"Respond to Webhook","type":"main","index":0}]]}},
+  "settings": {"executionOrder":"v1","saveDataSuccessExecution":"none","saveDataErrorExecution":"none"}
+}

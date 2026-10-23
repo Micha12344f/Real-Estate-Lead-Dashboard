@@ -1,0 +1,34 @@
+# Local secrets/configuration
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/**/.env.local
+
+# Local IDE/deployment state and packages
+.vercel/
+frontend/**/.vercel/
+node_modules/
+
+# Python caches and local virtual environments
+.pytest_cache/
+.coverage
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local scratch: never commit raw customer data or identity maps
+.work/
+raw/
+*.raw.json
+
+# Per-run test results are local outputs; the two reviewed screenshots are tracked.
+tests/last-e2e-result.json
+tests/last-browser-e2e-result.json
+Tools/last-e2e-result.json
+Tools/last-browser-e2e-result.json
+
+# Native runtime logs/process state (data and keys live in LOCALAPPDATA).
+.local-run/

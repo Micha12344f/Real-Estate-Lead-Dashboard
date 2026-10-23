@@ -1,0 +1,36 @@
+name: Backlog agent (install / status / uninstall)
+
+# Installs the read-only container-log agent on the TVE server via the
+# self-hosted runner. Manual only. The API key is generated on the server and
+# never appears in the workflow log; fetch it with the operator key helper.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "install (deploy/update), status, or uninstall"
+        type: choice
+        options: [install, status, uninstall]
+        default: install
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tve-backlog-agent
+  cancel-in-progress: false
+
+jobs:
+  backlog-agent:
+    runs-on: [self-hosted, linux, x64, thames-valley]
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run the backlog agent action
+        run: |
+          set -euo pipefail
+          bash ops/backlog-agent/install.sh "${{ inputs.action }}"

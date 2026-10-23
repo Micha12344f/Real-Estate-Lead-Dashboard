@@ -1,0 +1,10 @@
+{
+  "name": "TVE Agent Tool - Add CRM Note",
+  "nodes": [
+    {"id":"c85f7083-bb4b-458a-99da-0064d31a7f33","name":"Webhook","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,300],"parameters":{"httpMethod":"POST","path":"tve-agent/tools/add_crm_note","responseMode":"responseNode","authentication":"headerAuth","options":{}},"credentials":{"httpHeaderAuth":{"id":"SCWfh3t3hgnxmMF1","name":"TVE Webhook Auth"}},"webhookId":"d2099c65-5add-42c2-932b-177a40b4311c"},
+    {"id":"5b089109-7800-4131-ad34-cea4a9dd9dd7","name":"Fail closed","type":"n8n-nodes-base.code","typeVersion":2,"position":[300,300],"parameters":{"jsCode":"return [{json:{ok:false,data:null,summary:'Inactive: a safe, confirmed Acquaint note payload mapping and human confirmation gate have not been verified.'}}];","mode":"runOnceForAllItems"}},
+    {"id":"be648daf-f715-46dc-8170-540d0290c2e0","name":"Respond to Webhook","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[520,300],"parameters":{"respondWith":"json","responseBody":"={{ $json }}","options":{}}}
+  ],
+  "connections": {"Webhook":{"main":[[{"node":"Fail closed","type":"main","index":0}]]},"Fail closed":{"main":[[{"node":"Respond to Webhook","type":"main","index":0}]]}},
+  "settings": {"executionOrder":"v1","saveDataSuccessExecution":"none","saveDataErrorExecution":"none"}
+}

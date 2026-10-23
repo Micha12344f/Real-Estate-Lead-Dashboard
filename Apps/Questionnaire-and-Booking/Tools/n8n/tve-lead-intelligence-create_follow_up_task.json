@@ -1,0 +1,10 @@
+{
+  "name": "TVE Agent Tool - Create Follow-up Task",
+  "nodes": [
+    {"id":"6eeb9f70-9435-46a9-8e0c-d6260d3195cd","name":"Webhook","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,300],"parameters":{"httpMethod":"POST","path":"tve-agent/tools/create_follow_up_task","responseMode":"responseNode","authentication":"headerAuth","options":{}},"credentials":{"httpHeaderAuth":{"id":"SCWfh3t3hgnxmMF1","name":"TVE Webhook Auth"}},"webhookId":"63d96f9d-8b35-492f-b7ce-8b0cb2c4d7b8"},
+    {"id":"72c78630-dde3-469b-8fe2-44cc582c4d05","name":"Fail closed","type":"n8n-nodes-base.code","typeVersion":2,"position":[300,300],"parameters":{"jsCode":"return [{json:{ok:false,data:null,summary:'Inactive: a safe, confirmed Acquaint task action needs an approved task type/payload mapping and human confirmation gate.'}}];","mode":"runOnceForAllItems"}},
+    {"id":"9e090311-8a8e-48bd-a200-9b726630780c","name":"Respond to Webhook","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[520,300],"parameters":{"respondWith":"json","responseBody":"={{ $json }}","options":{}}}
+  ],
+  "connections": {"Webhook":{"main":[[{"node":"Fail closed","type":"main","index":0}]]},"Fail closed":{"main":[[{"node":"Respond to Webhook","type":"main","index":0}]]}},
+  "settings": {"executionOrder":"v1","saveDataSuccessExecution":"none","saveDataErrorExecution":"none"}
+}

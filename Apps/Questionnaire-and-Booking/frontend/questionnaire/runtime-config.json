@@ -1,0 +1,7 @@
+{
+  "questionnaireSubmitBaseUrl": "https://tve-n8n.hedgedge.info/webhook/tve-questionnaire-submit/thames-valley-estates/questionnaire-submit",
+  "bookingBaseUrl": "https://tve-n8n.hedgedge.info/webhook",
+  "bookingPrimaryUrl": "https://tve-n8n.hedgedge.info/webhook",
+  "bookingFallbackUrl": "https://tve-n8n.hedgedge.info/webhook",
+  "notes": "Public static fallback config. Do not put credentials in this file."
+}

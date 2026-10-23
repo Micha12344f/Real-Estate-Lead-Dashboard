@@ -1,0 +1,51 @@
+{
+  "repository": "Micha12344f/thames-valley",
+  "commit": "88f2b70bd1de89ecb5797e7f6e9ee0fa12b16027",
+  "files": [
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/emails/onthemarket.json",
+      "local": "fixtures/emails/onthemarket.json",
+      "sha256": "dcf28e7fb961213663c2a7941a4540fcd21b12296b06ce4ea0683c5a1d4a669a",
+      "records": 308
+    },
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/emails/rightmove.json",
+      "local": "fixtures/emails/rightmove.json",
+      "sha256": "39c13b7e20b505e40035d503e7227e3aee40767e1e2c4d6fdaa04e585c0b7eb6",
+      "records": 188
+    },
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/enquiries/guest.json",
+      "local": "fixtures/enquiries/guest.json",
+      "sha256": "b56e62ac4d83a70eeb3c983ba8b9dee7dd1353f281b3eeccdfd17546c6e9af30",
+      "records": 50
+    },
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/enquiries/onthemarket.json",
+      "local": "fixtures/enquiries/onthemarket.json",
+      "sha256": "dd63b42f750b17d8004ed1e35e479adeda23cdf90c0383e8a7894213cf4b3f12",
+      "records": 308
+    },
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/enquiries/rightmove.json",
+      "local": "fixtures/enquiries/rightmove.json",
+      "sha256": "a0891e3ca56d23107bae305db5d6fd325bced0123bb5adbe0afbdf2474ac607f",
+      "records": 188
+    },
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/scenarios/completed-questionnaire/questionnaire-answers.json",
+      "local": "fixtures/scenarios/completed-questionnaire/questionnaire-answers.json",
+      "sha256": "00858569abf5d9e92270bd33e745065a1a8da4e29c71a46394efdda83a55afd3",
+      "records": 229
+    },
+    {
+      "source": "Apps/Questionnaire-and-Booking/Sandbox/synthetic-data/scenarios/pending-questionnaire/enquiries.json",
+      "local": "fixtures/scenarios/pending-questionnaire/enquiries.json",
+      "sha256": "732ff66fba839f533035914c36450fb155a8d1aa52fba41e31c0453343884f7f",
+      "records": 317
+    }
+  ],
+  "derived": {
+    "properties.json": "Derived only from approved synthetic enquiry addresses and OTM references"
+  }
+}

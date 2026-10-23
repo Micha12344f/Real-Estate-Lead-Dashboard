@@ -1,0 +1,36 @@
+{
+  "suite": "TVE Lead Intelligence",
+  "hashNormalization": "UTF-8 file bytes with CRLF normalized to LF",
+  "workflowFiles": [
+    {"file":"tve-lead-intelligence-search_leads.json","liveWorkflowId":"DhUj9hhn79w3OhkC","name":"TVE Agent Tool - Search Leads","active":true,"functionalWriteImplementation":null,"sha256":"b62709fac5eccf2d62f1aac82d5afd4e5257743d2562019c56e6eaad4160e355"},
+    {"file":"tve-lead-intelligence-get_lead_context.json","liveWorkflowId":"A2CdVDjOmKE5iKvi","name":"TVE Agent Tool - Get Lead Context","active":true,"functionalWriteImplementation":null,"sha256":"108a6177b4daa40b93f102fe3a9677441a97f592cbf99c3ede44dc90a03d21fd"},
+    {"file":"tve-lead-intelligence-attention_queue.json","liveWorkflowId":"hmSvJ5aRF8GPgXQK","name":"TVE Agent Tool - Attention Queue","active":true,"functionalWriteImplementation":null,"sha256":"0f3d5743c6307ec4bfd89ff2f7389edf79ca6509bf555cf5ce06427bf5254942"},
+    {"file":"tve-lead-intelligence-pipeline_summary.json","liveWorkflowId":"ATbQOktA74Ku86ZA","name":"TVE Agent Tool - Pipeline Summary","active":true,"functionalWriteImplementation":null,"sha256":"9371e47c81ead54e84927cb64210577d3701917d69f30c87fb90947252d0143e"},
+    {"file":"tve-lead-intelligence-search_properties.json","liveWorkflowId":"bhx28bBsMTkGsCuK","name":"TVE Agent Tool - Search Properties","active":true,"functionalWriteImplementation":null,"sha256":"bec387a32c97c224cf39efa2f9916bd51a67d6353d85f5968a21ef9ff189f74e"},
+    {"file":"tve-lead-intelligence-property_contacts.json","liveWorkflowId":"1fuTD9TsWvuMy0qT","name":"TVE Agent Tool - Property Contacts","active":true,"functionalWriteImplementation":null,"sha256":"74863fb25394245cc1a80d346ed70e98417bda6cfd30f189706e1bf148a0cce9"},
+    {"file":"tve-lead-intelligence-viewing_availability.json","liveWorkflowId":"pcwd6KDMYuSRnYdW","name":"TVE Agent Tool - Viewing Availability","active":true,"functionalWriteImplementation":null,"sha256":"4f03dd629267d0daebda44ab5134694754dd8afee0f466dbcda4d44e366c477f"},
+    {"file":"tve-lead-intelligence-assign_property.json","liveWorkflowId":"aiw1qIXStBp616Df","name":"TVE Agent Tool - Assign Property","active":true,"functionalWriteImplementation":null,"sha256":"0cc328ef78ba57ffa7b416f868e0fb4d4d745147893958bb9321313cd6bc4189"},
+    {"file":"tve-lead-intelligence-send_template_email.json","liveWorkflowId":"5BC5Opicck5tnwFv","name":"TVE Agent Tool - Send Template Email","active":true,"functionalWriteImplementation":null,"sha256":"45cdb237bc462359582925674fc6e547c47b2b3c1e38572e65d624a318d45dd3"},
+    {"file":"tve-lead-intelligence-create_follow_up_task.json","liveWorkflowId":"TtSNZSxNYkmaOgj3","name":"TVE Agent Tool - Create Follow-up Task","active":false,"functionalWriteImplementation":false,"sha256":"81a218e701ab49e249b5b6805713fd6a6c2b5e2c23c8f4c88d14e661272982da"},
+    {"file":"tve-lead-intelligence-add_crm_note.json","liveWorkflowId":"iHqBtbHGTnWFL5ho","name":"TVE Agent Tool - Add CRM Note","active":false,"functionalWriteImplementation":false,"sha256":"3fbce5aeb4fabeafdf6743a9cd76bdff57042ab46a68ec67a75b7fc7d4c32e40"},
+    {"file":"tve-lead-intelligence-agent.json","liveWorkflowId":"CvjXxyYTEP3s7ho5","name":"TVE Lead Intelligence Agent","active":true,"functionalWriteImplementation":null,"sha256":"a545704ce978ef74629c1d1402ea487ec35aa6911a1e0cb1b12a994683ed9446"}
+  ],
+  "credentials": {
+    "SCWfh3t3hgnxmMF1":{"type":"httpHeaderAuth","name":"TVE Webhook Auth"},
+    "owO7jp5b0fldyqP0":{"type":"httpHeaderAuth","name":"TVE Dashboard API - Agent"},
+    "6an1GPKXFTtCUaV4":{"type":"smtp","name":"SMTP account"},
+    "rK4apBfFhrulq44W":{"type":"httpHeaderAuth","name":"TVE Agent Webhook Auth"},
+    "dCFguhocwmxdymP9":{"type":"agentLangfuseApi","name":"Langfuse (Agent)"},
+    "YqR7H1ENSczLBZoK":{"type":"ollamaApi","name":"Ollama (local Docker 172.17.0.1:11434)"}
+  },
+  "importsActivateByDefault": false,
+  "notes": [
+    "Exports contain credential IDs/names only; bind matching credentials in another instance.",
+    "Import into an isolated/inactive workflow first; production webhook paths already exist.",
+    "No pinData, staticData, execution outputs, decrypted credentials or environment files included.",
+    "Create-follow-up-task and add-crm-note are inactive fail-closed placeholders, not functional write implementations.",
+    "Assignment and email are configured, static-checked only, never executed in tests.",
+    "Email link templates require an active backend-issued link and permitted deployed form host.",
+    "Native AI Agent is not used; installed community n8n-nodes-agent-langfuse is required."
+  ]
+}

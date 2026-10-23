@@ -1,0 +1,62 @@
+name: tve-backlog
+
+services:
+  # Scoped Docker socket proxy: exposes ONLY read-only container list + logs.
+  # exec/create/start/stop/kill/images/volumes/networks are all denied.
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.2
+    container_name: tve-backlog-socket-proxy
+    restart: unless-stopped
+    environment:
+      CONTAINERS: "1"
+      LOGS: "1"
+      PING: "1"
+      VERSION: "1"
+      EXEC: "0"
+      POST: "0"
+      ALLOW_START: "0"
+      ALLOW_STOP: "0"
+      ALLOW_RESTARTS: "0"
+      IMAGES: "0"
+      VOLUMES: "0"
+      NETWORKS: "0"
+      INFO: "0"
+      EVENTS: "0"
+      AUTH: "0"
+      SECRETS: "0"
+      BUILD: "0"
+      COMMIT: "0"
+      CONFIGS: "0"
+      DISTRIBUTION: "0"
+      NODES: "0"
+      PLUGINS: "0"
+      SERVICES: "0"
+      SESSION: "0"
+      SWARM: "0"
+      SYSTEM: "0"
+      TASKS: "0"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [backlog-internal]
+
+  backlog-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: tve-backlog-api
+    restart: unless-stopped
+    environment:
+      DOCKER_API: http://socket-proxy:2375
+      BACKLOG_API_KEY: ${BACKLOG_API_KEY:?BACKLOG_API_KEY must be set}
+      BACKLOG_MAX_TAIL: "2000"
+    ports:
+      # Loopback only. Reached via SSH local port-forward; never public.
+      - "127.0.0.1:${BACKLOG_PORT:-9801}:8080"
+    depends_on:
+      - socket-proxy
+    networks: [backlog-internal]
+
+networks:
+  backlog-internal:
+    name: tve-backlog-internal
+    driver: bridge

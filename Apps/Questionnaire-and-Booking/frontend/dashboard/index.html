@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TVE Lead Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="assets/meesix-mark.svg">
+<!-- Bump these query versions when dashboard app.js or styles.css changes. -->
+<link rel="stylesheet" href="styles.css?v=lead-delete-1">
+<link rel="preload" href="assets/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="forms.css">
+</head>
+<body>
+<div id="banner" class="banner" role="alert" hidden>
+  <span id="banner-icon" class="banner-icon"></span>
+  <span id="banner-text"></span>
+</div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="workspace">
+      <div class="avatar" aria-hidden="true"><img src="assets/meesix-mark.svg" alt=""></div>
+      <div class="workspace-copy">
+        <div class="workspace-name">Thames Valley Estates</div>
+        <div class="workspace-sub">Lead Intelligence</div>
+      </div>
+      <button id="sidebar-toggle" class="icon-btn workspace-toggle" type="button"
+              aria-label="Collapse sidebar" aria-expanded="true" aria-controls="nav"
+              title="Collapse sidebar"></button>
+    </div>
+    <nav id="nav" class="nav" aria-label="Primary"></nav>
+    <div class="sidebar-footer">
+      <a class="footer-link" href="#/settings" data-page="settings" aria-label="Settings"><span id="foot-settings"></span><span class="footer-label">Settings</span></a>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="header">
+      <div id="breadcrumb" class="breadcrumb"></div>
+      <div id="header-actions" class="header-actions"></div>
+    </header>
+    <main id="view" class="view" tabindex="-1"></main>
+  </div>
+</div>
+<div id="drawer-scrim" class="scrim" hidden></div>
+<aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Lead details" aria-hidden="true"></aside>
+<div id="modal-scrim" class="scrim" hidden></div>
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" hidden></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="delete-recovery.js?v=lead-delete-retry-1"></script>
+<script src="forms-defaults.js"></script>
+<script src="forms.js"></script>
+<script src="app.js?v=lead-delete-retry-1"></script>
+</body>
+</html>

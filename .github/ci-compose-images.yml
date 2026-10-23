@@ -1,0 +1,33 @@
+# CI-only registry selection. This override is deliberately outside the app
+# tree and is never used by production deployment or local Compose defaults.
+services:
+  app-function-logic:
+    build:
+      args:
+        PYTHON_BASE_IMAGE: public.ecr.aws/docker/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+      pull: false
+
+  imap-intake:
+    build:
+      args:
+        PYTHON_BASE_IMAGE: public.ecr.aws/docker/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+      pull: false
+
+  web-frontend:
+    build:
+      args:
+        NODE_BASE_IMAGE: public.ecr.aws/docker/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+      pull: false
+
+  pg-contacts: &postgres-ci
+    image: public.ecr.aws/docker/library/postgres:15-alpine@sha256:f7d23353e1b15400d22ebe31189f4d314b87a4c129cc400c8c2d8d4ca127bf81
+    pull_policy: never
+  pg-enquiries: *postgres-ci
+  pg-responses: *postgres-ci
+  pg-tokens: *postgres-ci
+  pg-settings: *postgres-ci
+  pg-sandbox: *postgres-ci
+
+  mock-inbox:
+    image: ghcr.io/axllent/mailpit:v1.27.0@sha256:fb84cfb1c3a33007cfdee8ba5a77b8c6c894de5b1a368372ddc5c965cf5c0b6d
+    pull_policy: never

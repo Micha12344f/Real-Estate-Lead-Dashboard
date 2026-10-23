@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thames Valley Estates | Book a viewing</title>
+  <meta name="description" content="Book a property viewing with Thames Valley Estates." />
+  <link rel="icon" type="image/svg+xml" href="/booking/assets/tve-logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #1a1a1a; min-height: 100vh;
+      background: #fafaf8 url("/booking/assets/bywater-street.jpg") center/cover no-repeat fixed;
+    }
+    .tve-page {
+      min-height: 100vh; display: flex; flex-direction: column;
+      background: linear-gradient(180deg, rgba(250, 250, 248, 0.6) 0%, rgba(250, 250, 248, 0.92) 100%);
+    }
+    .tve-header { padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+    .tve-header .tve-logo { width: 36px; height: auto; }
+    .tve-header .tve-name {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase; color: #1a1a1a; font-weight: 600;
+    }
+    .tve-main { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 24px; }
+    .booking-card {
+      width: 100%; max-width: 980px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(139, 115, 85, 0.18); border-radius: 12px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18); overflow: hidden;
+    }
+    .booking-layout { display: grid; grid-template-columns: 320px 1fr; min-height: 520px; }
+    .booking-meta {
+      padding: 28px 24px; border-right: 1px solid rgba(139, 115, 85, 0.14);
+      background: rgba(250, 248, 244, 0.55); position: relative;
+    }
+    .meta-host { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .meta-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #8b7355, #2e73c5);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600;
+    }
+    .meta-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 26px; font-weight: 600; line-height: 1.2; margin: 0 0 8px; color: #1a1a1a;
+    }
+    .meta-desc { font-size: 14px; color: #6b6b6b; line-height: 1.5; margin: 0 0 18px; }
+    .meta-detail { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 13px; color: #3a3a3a; }
+    .meta-detail svg { width: 14px; height: 14px; color: #8b7355; flex-shrink: 0; margin-top: 2px; }
+    .meta-detail-label { font-weight: 600; color: #1a1a1a; }
+    .meta-selected-time { display: none; }
+    .meta-selected-time.is-visible {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+    #meta-selected-time-text { white-space: nowrap; }
+    .meta-tz { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 13px; color: #3a3a3a; }
+    .meta-tz svg { width: 14px; height: 14px; color: #8b7355; flex-shrink: 0; }
+    .meta-tz-select {
+      appearance: none; -webkit-appearance: none; background: transparent; border: none;
+      border-bottom: 1px solid rgba(139, 115, 85, 0.3); padding: 2px 16px 2px 0;
+      font-family: inherit; font-size: 13px; color: #1a1a1a; cursor: pointer; border-radius: 0;
+    }
+    .meta-tz-select:focus { outline: none; border-bottom-color: #8b7355; }
+    .meta-tz-text { font-weight: 500; }
+    .booking-main { padding: 28px 28px; display: flex; flex-direction: column; }
+    .step-header { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 600; margin: 0 0 16px; color: #1a1a1a; }
+    .step-sub { font-size: 14px; color: #6b6b6b; margin: 0 0 18px; }
+    .calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .calendar-month { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    .calendar-month .year { color: #9b9b9b; font-weight: 400; }
+    .calendar-nav { display: flex; gap: 4px; }
+    .calendar-nav-btn {
+      width: 32px; height: 32px; border: 1px solid rgba(139, 115, 85, 0.2); background: #fff;
+      border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .calendar-nav-btn:hover { background: rgba(139, 115, 85, 0.06); border-color: #8b7355; }
+    .calendar-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .calendar-nav-btn svg { width: 14px; height: 14px; color: #3a3a3a; }
+    .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; text-align: center; }
+    .calendar-weekday { font-size: 11px; font-weight: 600; color: #9b9b9b; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 0; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); gap: 4px; }
+    .day-cell { position: relative; width: 100%; padding-top: 100%; }
+    .day-btn {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%;
+      border: 2px solid transparent; border-radius: 8px; background: rgba(139, 115, 85, 0.06);
+      color: #1a1a1a; font-size: 14px; font-weight: 500; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .day-btn:hover:not(:disabled) { border-color: #8b7355; }
+    .day-btn.is-selected { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .day-btn.is-today::after {
+      content: ''; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; border-radius: 50%; background: #8b7355;
+    }
+    .day-btn.is-today.is-selected::after { background: #fff; }
+    .day-btn:disabled { background: transparent; color: #c4bfb6; cursor: default; font-weight: 400; }
+    .day-btn.is-other-month { color: #d8d3ca; }
+    .calendar-loading, .slots-loading { display: flex; align-items: center; justify-content: center; padding: 40px 0; color: #9b9b9b; font-size: 14px; }
+    .slots-wrap { flex: 1; }
+    .slots-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .slots-day { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    .slots-day .date-num { background: rgba(139, 115, 85, 0.12); border-radius: 50%; padding: 1px 8px; font-size: 14px; margin-left: 4px; }
+    .slots-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+    .slot-btn {
+      border: 1px solid rgba(139, 115, 85, 0.22); background: #fff; color: #1a1a1a;
+      border-radius: 8px; padding: 12px 16px; font-family: inherit; font-size: 15px; font-weight: 500;
+      cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .slot-btn:hover:not(:disabled) { border-color: #8b7355; background: rgba(139, 115, 85, 0.04); }
+    .slot-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .slot-btn .slot-meta { font-size: 12px; color: #9b9b9b; font-weight: 400; }
+    .slots-empty { padding: 24px 0; text-align: center; color: #6b6b6b; font-size: 15px; }
+    .slots-layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; }
+    .day-sidebar { display: flex; flex-direction: column; gap: 6px; }
+    .day-side-item {
+      display: flex; flex-direction: column; gap: 5px; min-height: 44px; height: auto;
+      border: 1px solid rgba(139, 115, 85, 0.18); background: #fff; border-radius: 8px;
+      padding: 8px 10px; cursor: pointer; text-align: left; font-family: inherit;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .day-side-item:hover:not(:disabled) { border-color: #8b7355; background: rgba(139, 115, 85, 0.04); }
+    .day-side-item.is-selected { border-color: #1a1a1a; background: rgba(139, 115, 85, 0.08); }
+    .day-side-item.is-selected .day-side-name { color: #1a1a1a; }
+    .day-side-item.is-selected .day-side-date { color: #6f4d1f; }
+    .day-side-item.is-selected .day-side-chip { color: #1a1a1a; background: rgba(139, 115, 85, 0.18); }
+    .day-side-item:disabled { opacity: 0.45; cursor: default; }
+    .day-side-head { display: flex; align-items: baseline; gap: 6px; }
+    .day-side-name { font-weight: 600; font-size: 13px; color: #1a1a1a; }
+    .day-side-date { font-size: 13px; color: #6f4d1f; font-weight: 600; }
+    .day-side-body { display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start; align-items: flex-start; }
+    .day-side-count { font-size: 11px; color: #6f4d1f; font-weight: 500; }
+    .day-side-chip { flex: 0 0 auto; white-space: nowrap; font-size: 11px; color: #6f4d1f; background: rgba(139, 115, 85, 0.1); border-radius: 4px; padding: 2px 6px; }
+    .day-side-no { font-size: 11px; color: #9b9b9b; font-style: italic; }
+    .form-field { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+    .form-label .req { color: #b8860b; }
+    .form-input, .form-textarea, .form-select {
+      width: 100%; border: 1px solid rgba(139, 115, 85, 0.22); border-radius: 6px;
+      padding: 10px 12px; font-family: inherit; font-size: 15px; color: #1a1a1a; background: #fff;
+      transition: border-color 0.15s ease;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: #8b7355; }
+    .phone-row { display: flex; gap: 10px; max-width: 480px; }
+    .phone-country-picker { position: relative; flex: 0 0 46%; min-width: 0; }
+    .phone-country-button {
+      width: 100%; min-height: 44px; padding: 10px 34px 10px 12px; border: 1px solid rgba(139, 115, 85, 0.22);
+      border-radius: 6px; background: #fff; color: #1a1a1a; font: inherit; font-size: 14px; text-align: left;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238b7355' d='M0 0h10L5 6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    .phone-country-button:focus { outline: none; border-color: #8b7355; }
+    .phone-country-panel {
+      position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; width: min(280px, calc(100vw - 32px));
+      padding: 8px; border: 1px solid rgba(139, 115, 85, 0.22); border-radius: 6px; background: #fff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); display: none;
+    }
+    .phone-country-picker.is-open .phone-country-panel { display: block; }
+    .phone-country-search { margin-bottom: 6px; }
+    .phone-country-options { max-height: min(220px, 32vh); max-height: min(220px, 32dvh); overflow-y: auto; overscroll-behavior: contain; }
+    .phone-country-option {
+      width: 100%; padding: 10px; border: 0; border-radius: 4px; background: #fff; color: #1a1a1a;
+      font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+    }
+    .phone-country-option:hover, .phone-country-option:focus, .phone-country-option[aria-selected="true"] { background: rgba(139, 115, 85, 0.08); outline: none; }
+    .phone-country-empty { padding: 10px; color: #6b6b6b; font-size: 14px; }
+    .phone-local { flex: 1; min-width: 0; }
+    .property-picker { min-width: 0; }
+    .property-picker.is-open .property-options { display: grid; }
+    .property-options {
+      display: none;
+      max-height: min(240px, 32vh);
+      max-height: min(240px, 32dvh);
+      margin-top: 6px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      border: 1px solid rgba(139, 115, 85, 0.22);
+      border-radius: 6px;
+      background: #fff;
+    }
+    .property-option {
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 0;
+      border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+      background: #fff;
+      color: #1a1a1a;
+      font: inherit;
+      text-align: left;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+    }
+    .property-option:last-child { border-bottom: 0; }
+    .property-option:hover, .property-option:focus, .property-option[aria-selected="true"] { background: rgba(139, 115, 85, 0.08); outline: none; }
+    .property-options-empty { padding: 12px; color: #6b6b6b; font-size: 14px; }
+    .form-textarea { min-height: 80px; resize: vertical; }
+    .form-error { color: #b85450; font-size: 13px; margin-top: 4px; display: none; }
+    .form-error.is-visible { display: block; }
+    .confirm-card {
+      border: 1px solid rgba(139, 115, 85, 0.18);
+      background: rgba(250, 248, 244, 0.55);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+    }
+    .confirm-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(139, 115, 85, 0.12);
+      font-size: 15px;
+    }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-label { color: #6b6b6b; flex-shrink: 0; }
+    .confirm-value { color: #1a1a1a; font-weight: 500; text-align: right; }
+    .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 12px; }
+    .btn { border: none; border-radius: 4px; padding: 11px 22px; font-family: inherit; font-size: 15px; font-weight: 500; letter-spacing: 0.04em; cursor: pointer; transition: background 0.15s ease; }
+    .btn-back { background: transparent; color: #3a3a3a; padding-left: 0; }
+    .btn-back:hover { color: #1a1a1a; }
+    .btn-primary { background: #1a1a1a; color: #fff; }
+    .btn-primary:hover { background: #8b7355; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .booking-banner { margin: 0; padding: 10px 24px; border-bottom: 1px solid #d5b27c; background: #fff8ef; color: #6f4d1f; line-height: 1.4; font-size: 14px; display: none; }
+    .booking-banner.is-visible { display: block; }
+    .success-card { text-align: center; padding: 40px 20px; }
+    .success-check { width: 56px; height: 56px; border-radius: 50%; background: #e8f5e9; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
+    .success-check svg { width: 28px; height: 28px; color: #2e7d32; }
+    .success-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; font-weight: 600; margin: 0 0 8px; }
+    .success-sub { color: #6b6b6b; font-size: 16px; margin: 0 0 24px; line-height: 1.5; }
+    .success-grid { display: grid; grid-template-columns: 80px 1fr; gap: 8px 16px; text-align: left; max-width: 420px; margin: 0 auto; border-top: 1px solid rgba(139, 115, 85, 0.14); padding-top: 20px; }
+    .success-grid dt { font-size: 13px; font-weight: 600; color: #8b7355; text-transform: uppercase; letter-spacing: 0.06em; }
+    .success-grid dd { font-size: 15px; color: #1a1a1a; margin: 0 0 12px; }
+    .hidden { display: none !important; }
+    .footer-note { text-align: center; padding: 12px 24px; font-size: 14px; color: rgba(181, 176, 168, 0.8); }
+    @media (max-width: 860px) {
+      .booking-layout { grid-template-columns: 1fr; }
+      .booking-meta { border-right: none; border-bottom: 1px solid rgba(139, 115, 85, 0.14); }
+      .booking-main { padding: 24px 20px; }
+      .slots-layout { grid-template-columns: 1fr; }
+      .day-sidebar { max-height: 220px; }
+    }
+    @media (max-width: 480px) {
+      .tve-main { padding: 0; }
+      .booking-card { border-radius: 0; box-shadow: none; }
+      .tve-header { padding: 12px 16px; }
+      .tve-header .tve-name { font-size: 15px; }
+      .booking-main { padding: 20px 16px; }
+      .booking-meta { padding: 20px 16px; }
+      .calendar-grid { gap: 2px; }
+      .day-btn { font-size: 13px; }
+      .slot-btn { padding: 14px 14px; min-height: 48px; }
+      .btn { min-height: 44px; }
+      .day-side-item { min-height: 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tve-page">
+    <header class="tve-header">
+      <svg class="tve-logo" viewBox="0 0 415 357" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-label="Thames Valley Estates">
+        <g transform="translate(0,357) scale(0.1,-0.1)" stroke="none">
+          <path fill="#2e73c5" d="M1755 3180 c-115 -49 -219 -94 -230 -99 -40 -20 -114 -51 -119 -51 -3 0 -34 -13 -68 -29 -35 -16 -175 -76 -313 -134 -137 -58 -277 -117 -310 -132 -72 -32 -103 -45 -130 -56 -11 -4 -51 -22 -88 -38 -38 -17 -74 -31 -80 -31 -7 0 -20 -7 -30 -14 -16 -12 -17 -38 -15 -347 l3 -333 60 3 c33 1 121 6 195 11 448 31 534 39 715 70 186 31 223 46 210 83 -6 15 -108 59 -170 73 -16 3 -66 17 -110 31 -303 93 -400 176 -295 252 21 15 54 34 72 41 18 6 42 16 53 21 21 9 63 20 180 46 73 16 112 23 235 42 41 7 98 16 125 21 47 9 168 23 345 40 41 4 165 12 275 19 110 6 274 16 365 21 91 6 280 10 420 11 l255 0 -40 19 c-75 35 -156 70 -161 70 -3 0 -20 6 -37 14 -119 54 -178 79 -372 161 -153 64 -226 95 -270 115 -11 5 -54 23 -95 40 -41 17 -84 35 -95 40 -11 5 -46 20 -78 34 -32 14 -60 26 -63 26 -3 0 -30 11 -60 25 -30 14 -58 25 -62 25 -4 -1 -101 -41 -217 -90z"/>
+          <path fill="#2d4169" d="M3450 2524 c-712 -36 -1175 -115 -1188 -204 -9 -56 86 -103 378 -184 406 -113 640 -252 640 -381 0 -97 -120 -189 -350 -268 -41 -14 -95 -31 -120 -37 -105 -26 -211 -48 -305 -64 -579 -102 -870 -195 -1108 -354 -106 -71 -195 -167 -256 -275 l-21 -37 1235 0 1235 0 0 905 0 905 -42 -2 c-24 -1 -68 -3 -98 -4z"/>
+        </g>
+      </svg>
+      <span class="tve-name">Thames Valley Estates</span>
+    </header>
+    <main class="tve-main">
+      <section class="booking-card">
+        <div class="booking-banner" id="booking-banner"></div>
+        <div class="booking-layout">
+          <aside class="booking-meta" id="booking-meta">
+            <h1 class="meta-title" id="meta-title">Property Viewing</h1>
+            <p class="meta-desc" id="meta-desc">A 30-minute viewing of your selected property with one of our agents.</p>
+            <div class="meta-detail" id="meta-property" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-6h4v6"/></svg>
+              <span><span class="meta-detail-label">Property:</span> <span id="meta-property-text"></span></span>
+            </div>
+            <div class="meta-detail meta-selected-time" id="meta-selected-time">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <span id="meta-selected-time-text"></span>
+            </div>
+            <div class="meta-tz">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>
+              <select class="meta-tz-select" id="tz-select" aria-label="Timezone"></select>
+              <span class="meta-tz-text hidden" id="tz-text"></span>
+            </div>
+          </aside>
+          <div class="booking-main" id="booking-main">
+            <div id="step-guest" class="hidden">
+              <h2 class="step-header">Tell us about you</h2>
+              <p class="step-sub">Enter your details and choose a property to see available viewing times.</p>
+              <div class="form-field">
+                <label class="form-label" for="guest-first">First name <span class="req">*</span></label>
+                <input class="form-input" id="guest-first" type="text" autocomplete="given-name" required minlength="2" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="guest-last">Last name <span class="req">*</span></label>
+                <input class="form-input" id="guest-last" type="text" autocomplete="family-name" required minlength="2" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="guest-email">Email <span class="req">*</span></label>
+                <input class="form-input" id="guest-email" type="email" autocomplete="email" required />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="guest-phone">Phone <span class="req">*</span></label>
+                <div class="phone-row">
+                  <div class="phone-country-picker" id="phone-country-picker">
+                    <button class="phone-country-button" id="phone-country-button" type="button" aria-label="Country calling code" aria-expanded="false" aria-controls="phone-country-options"></button>
+                    <div class="phone-country-panel">
+                      <input class="form-input phone-country-search" id="phone-country-search" type="search" placeholder="Search country or code" autocomplete="off" aria-label="Search country calling codes" />
+                      <div class="phone-country-options" id="phone-country-options" role="listbox" aria-label="Country calling codes"></div>
+                    </div>
+                  </div>
+                  <input class="form-input phone-local" id="guest-phone" type="tel" autocomplete="tel-national" placeholder="Phone number" required minlength="7" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="guest-property-search">Property <span class="req">*</span></label>
+                <div class="property-picker" id="property-picker">
+                  <input class="form-input" id="guest-property-search" type="text" role="combobox" aria-required="true" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="property-options" placeholder="Search or select a property..." autocomplete="off" disabled required />
+                  <div class="property-options" id="property-options" role="listbox" aria-label="Available properties"></div>
+                  <select class="form-select" id="guest-property" hidden aria-hidden="true" tabindex="-1" required>
+                  <option value="">Select a property...</option>
+                  </select>
+                </div>
+                <div class="form-error" id="guest-property-error">Please choose a property.</div>
+              </div>
+                <div class="form-error" id="guest-error" role="alert" aria-live="polite" style="margin-bottom:12px;"></div>
+              <div class="form-actions">
+                <button class="btn btn-primary" type="button" id="guest-submit" disabled>See available times</button>
+              </div>
+            </div>
+            <div id="step-calendar">
+              <h2 class="step-header">Select a date</h2>
+              <p class="step-sub">Choose a day to see available viewing times.</p>
+              <div id="calendar-area">
+                <div class="calendar-loading" id="calendar-loading" role="status" aria-live="polite">Loading availability...</div>
+                <div class="hidden" id="calendar-content">
+                  <div id="calendar-empty" class="slots-empty hidden" role="status">No viewing times are currently available for this property. You can retry or choose another property.</div>
+                  <div id="calendar-error" class="form-error" role="alert" aria-live="polite"></div>
+                  <div class="form-actions hidden" id="availability-actions"><button class="btn btn-back" type="button" id="change-property">&larr; Change property</button><button class="btn btn-primary" type="button" id="availability-retry">Retry availability</button></div>
+                  <div class="calendar-head">
+                    <span class="calendar-month" id="cal-month-label"></span>
+                    <div class="calendar-nav">
+                      <button class="calendar-nav-btn" id="cal-prev" aria-label="Previous month" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+                      <button class="calendar-nav-btn" id="cal-next" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="calendar-weekdays" id="cal-weekdays"></div>
+                  <div class="calendar-grid" id="cal-grid"></div>
+                </div>
+              </div>
+            </div>
+            <div id="step-slots" class="hidden">
+              <h2 class="step-header">Select a time</h2>
+              <div class="slots-wrap">
+                <div class="slots-head">
+                  <span class="slots-day" id="slots-day-label"></span>
+                  <button class="btn btn-back" id="slots-back" type="button">&larr; Change date</button>
+                </div>
+                <div class="slots-loading hidden" id="slots-loading">Loading times...</div>
+                <div class="slots-list" id="slots-list"></div>
+                <div class="slots-empty hidden" id="slots-empty">No times available on this day. Please pick another date.</div>
+              </div>
+            </div>
+            <div id="step-form" class="hidden">
+              <h2 class="step-header">Confirm your viewing</h2>
+              <p class="step-sub">Review your selected time and confirm to secure the booking.</p>
+              <div class="confirm-card">
+                <div class="confirm-row"><span class="confirm-label">Selected time</span><span class="confirm-value" id="confirm-when">—</span></div>
+                <div class="confirm-row"><span class="confirm-label">Duration</span><span class="confirm-value">30 minutes</span></div>
+              </div>
+              <div class="form-error" id="err-general" style="margin-bottom:12px;"></div>
+              <div class="form-actions">
+                <button class="btn btn-back" type="button" id="form-back">&larr; Back</button>
+                <button class="btn btn-primary" type="button" id="form-submit">Request viewing</button>
+              </div>
+            </div>
+            <div id="step-success" class="hidden">
+              <div class="success-card">
+                <div class="success-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+                <h2 class="success-title">Request acknowledged</h2>
+               <p class="success-sub">Thanks — we’ve received your viewing request. We’ll do our best to arrange it for your requested time, but it isn’t confirmed yet. We’ll contact you to let you know whether it’s available.</p>
+                <dl class="success-grid">
+                  <dt>What</dt><dd id="succ-what">Property Viewing</dd>
+                  <dt>When</dt><dd id="succ-when"></dd>
+                  <dt>Where</dt><dd id="succ-where">In person — address confirmed by your agent</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="footer-note">Bookings powered by Thames Valley Estates.</p>
+      </section>
+    </main>
+  </div>
+  <script src="/booking/country-codes.js"></script>
+  <script>
+  (function () {
+    var runtimeConfig = { bookingBaseUrl: "" };
+    var token = getTokenFromPath(window.location.pathname);
+    var selectedDate = null;
+    var selectedSlot = null;
+    var selectedPropertyId = "";
+    var activePropertyIndex = -1;
+    var suppressPropertyPickerFocus = false;
+    var browsingMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    var availableSlots = [];
+    var leadContext = {};
+    var TIMEZONE = "Europe/London";
+    var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var el = function (id) { return document.getElementById(id); };
+    if (!window.TVE_COUNTRY_CODES || !window.TVE_COUNTRY_CODES.length) {
+      throw new Error("Country calling-code data did not load.");
+    }
+    var countryCodes = window.TVE_COUNTRY_CODES.map(function (entry) {
+      return {
+        name: entry[0],
+        code: entry[1],
+        region: entry[2],
+        flag: entry[2].toUpperCase().replace(/[A-Z]/g, function (letter) {
+          return String.fromCodePoint(letter.charCodeAt(0) + 127397);
+        })
+      };
+    });
+    var selectedCountryCodeIndex = countryCodes.findIndex(function (country) { return country.region === "GB"; });
+    var activeCountryOptionIndex = -1;
+    function show(id) { el(id).classList.remove("hidden"); }
+    function hide(id) { el(id).classList.add("hidden"); }
+    function showBanner(msg) { var b = el("booking-banner"); b.textContent = msg || ""; b.classList.toggle("is-visible", !!msg); }
+    function fetchWithTimeout(url, options, timeoutMs) {
+      var controller = new AbortController();
+      var timer = window.setTimeout(function () { controller.abort(); }, timeoutMs || 12000);
+      return window.fetch(url, Object.assign({}, options || {}, { signal: controller.signal })).finally(function () { window.clearTimeout(timer); });
+    }
+    function responseMessage(response, payload, fallback) {
+      var requestId = payload && payload.error && payload.error.requestId || response.headers.get("X-Request-ID");
+      var message = response.status === 422 ? "Some details were rejected. Check the fields and try again."
+        : response.status >= 500 ? "The booking service is temporarily unavailable. Please retry."
+        : fallback;
+      return message + (requestId && /^[0-9a-f-]{36}$/i.test(requestId) ? " Reference: " + requestId : "");
+    }
+
+    function getTokenFromPath(pathname) {
+      var prefix = "/booking";
+      if (!pathname || pathname === prefix || pathname === prefix + "/") return "";
+      if (pathname.indexOf(prefix + "/") !== 0) return "";
+      var remainder = pathname.slice(prefix.length + 1).replace(/\/+$/, "");
+      if (!remainder || remainder.indexOf("/") !== -1) return "";
+      return decodeURIComponent(remainder);
+    }
+
+      function loadFormSettings() {
+        return fetch('/booking/api/forms-config', { cache: 'no-store', signal: AbortSignal.timeout(8000) }).then(function (response) {
+          if (!response.ok) throw new Error('Form settings unavailable');
+          return response.json();
+        }).then(function (config) {
+          if (config.logo_url && /^(https:\/\/|data:image\/(png|jpeg|webp);base64,)/.test(config.logo_url)) {
+            var current = document.querySelector('.tve-header .tve-logo');
+            var logo = document.createElement('img');
+            logo.className = 'tve-logo'; logo.alt = 'Thames Valley Estates';
+            logo.style.cssText = 'width:auto;max-width:160px;max-height:44px;object-fit:contain';
+            logo.onload = function () { if (current) current.replaceWith(logo); };
+            logo.src = config.logo_url;
+          }
+        }).catch(function () { /* Keep the built-in form available during an outage. */ });
+      }
+
+    loadFormSettings();
+
+    function normaliseConfig(config) {
+      var bookingBaseUrl = String((config && (config.bookingBaseUrl || config.BOOKING_BASE_URL || config.bookingPrimaryUrl || config.bookingFallbackUrl)) || "").trim().replace(/\/+$/, "");
+      return {
+        bookingBaseUrl: bookingBaseUrl
+      };
+    }
+    function fetchJson(url) {
+      return window.fetch(url, { method: "GET", cache: "no-store", credentials: "same-origin" }).then(function (r) {
+        if (!r.ok) throw new Error("Config request failed " + r.status);
+        return r.json();
+      });
+    }
+    function loadConfig() {
+      if (window.RUNTIME_CONFIG) { runtimeConfig = normaliseConfig(window.RUNTIME_CONFIG); return Promise.resolve(); }
+      return fetchJson("/booking/api/runtime-config").catch(function () { return fetchJson("/booking/api/runtime-config.json"); }).then(function (c) { runtimeConfig = normaliseConfig(c); });
+    }
+    function buildAvailabilityUrl() {
+      if (!selectedPropertyId && !token) return "";
+      var params = [];
+      if (token) params.push("token=" + encodeURIComponent(token));
+      if (selectedPropertyId) params.push("propertyId=" + encodeURIComponent(selectedPropertyId));
+      return "/booking/api/availability?" + params.join("&");
+    }
+    function buildConfirmUrl() {
+      if (!token) return "";
+      return "/booking/api/confirm";
+    }
+    function buildAvailablePropertiesUrl() {
+      return "/booking/api/available-properties";
+    }
+    function buildBookingGuestUrl() {
+      return "/booking/api/booking-guest";
+    }
+    function renderCountryCodeOptions(query) {
+      var options = el("phone-country-options");
+      var normalizedQuery = (query || "").trim().toLowerCase();
+      var queryDigits = normalizedQuery.replace(/\D/g, "");
+      options.innerHTML = "";
+      countryCodes.forEach(function (country, index) {
+        var searchable = (country.name + " " + country.code).toLowerCase();
+        var codeDigits = country.code.replace(/\D/g, "");
+        if (normalizedQuery && searchable.indexOf(normalizedQuery) === -1 && (!queryDigits || codeDigits.indexOf(queryDigits) === -1)) return;
+        var option = document.createElement("button");
+        option.type = "button";
+        option.className = "phone-country-option";
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", index === selectedCountryCodeIndex ? "true" : "false");
+        option.dataset.index = String(index);
+        option.textContent = country.flag + " " + country.name + " (" + country.code + ")";
+        option.addEventListener("click", function () {
+          selectedCountryCodeIndex = index;
+          el("phone-country-button").textContent = country.flag + " " + country.name + " (" + country.code + ")";
+          closeCountryCodePicker();
+        });
+        option.addEventListener("keydown", function (event) {
+          var visibleOptions = el("phone-country-options").querySelectorAll(".phone-country-option");
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            var nextIndex = event.key === "ArrowDown"
+              ? Math.min(index + 1, visibleOptions.length - 1)
+              : Math.max(index - 1, 0);
+            visibleOptions[nextIndex].focus();
+            visibleOptions[nextIndex].scrollIntoView({ block: "nearest" });
+          } else if (event.key === "Escape") {
+            closeCountryCodePicker();
+            el("phone-country-button").focus();
+          }
+        });
+        options.appendChild(option);
+      });
+      if (!options.children.length) {
+        var empty = document.createElement("div");
+        empty.className = "phone-country-empty";
+        empty.textContent = "No countries found.";
+        options.appendChild(empty);
+      }
+      activeCountryOptionIndex = -1;
+    }
+    function closeCountryCodePicker() {
+      el("phone-country-picker").classList.remove("is-open");
+      el("phone-country-button").setAttribute("aria-expanded", "false");
+      el("phone-country-search").value = "";
+    }
+    function bindCountryCodePicker() {
+      var picker = el("phone-country-picker");
+      var button = el("phone-country-button");
+      var search = el("phone-country-search");
+      var defaultCountry = countryCodes[selectedCountryCodeIndex];
+      if (!defaultCountry) throw new Error("United Kingdom calling code is missing.");
+      button.textContent = defaultCountry.flag + " " + defaultCountry.name + " (" + defaultCountry.code + ")";
+      button.addEventListener("click", function () {
+        var opening = !picker.classList.contains("is-open");
+        picker.classList.toggle("is-open", opening);
+        button.setAttribute("aria-expanded", opening ? "true" : "false");
+        if (opening) {
+          search.value = "";
+          renderCountryCodeOptions("");
+          search.focus();
+        }
+      });
+      search.addEventListener("input", function () { renderCountryCodeOptions(search.value); });
+      search.addEventListener("keydown", function (event) {
+        var options = el("phone-country-options").querySelectorAll(".phone-country-option");
+        if (event.key === "Escape") {
+          closeCountryCodePicker();
+          button.focus();
+        } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          if (!options.length) return;
+          activeCountryOptionIndex = event.key === "ArrowDown" ? 0 : options.length - 1;
+          options[activeCountryOptionIndex].focus();
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          var firstOption = el("phone-country-options").querySelector(".phone-country-option");
+          if (firstOption) firstOption.click();
+        }
+      });
+      picker.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && picker.classList.contains("is-open")) {
+          closeCountryCodePicker();
+          button.focus();
+        }
+      });
+      document.addEventListener("click", function (event) {
+        if (!picker.contains(event.target)) closeCountryCodePicker();
+      });
+    }
+    function guestIdentityComplete() {
+      return [el("guest-first").value, el("guest-last").value, el("guest-email").value, el("guest-phone").value]
+        .every(function (v) { return v && v.trim() !== ""; });
+    }
+    function guestSelectedProperty() {
+      return !!el("guest-property").value;
+    }
+    function updateGuestSubmitState() {
+      // Keep the action available once fields are filled so native validity errors
+      // (for example an invalid email) can be announced instead of silently disabling it.
+      var ready = guestIdentityComplete() && guestSelectedProperty();
+      el("guest-submit").disabled = !ready;
+    }
+    function closePropertyList() {
+      el("property-picker").classList.remove("is-open");
+      el("guest-property-search").setAttribute("aria-expanded", "false");
+      el("guest-property-search").removeAttribute("aria-activedescendant");
+    }
+    function renderPropertyOptions(query) {
+      var select = el("guest-property");
+      var list = el("property-options");
+      var normalizedQuery = (query || "").trim().toLowerCase();
+      list.innerHTML = "";
+      for (var i = 1; i < select.options.length; i++) {
+        var option = select.options[i];
+        if (option.textContent.toLowerCase().indexOf(normalizedQuery) === -1) continue;
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "property-option";
+        button.id = "property-option-" + i;
+        button.setAttribute("role", "option");
+        button.setAttribute("aria-selected", "false");
+        button.textContent = option.textContent;
+        button.addEventListener("click", function (selectedOption) {
+          return function () {
+            select.value = selectedOption.value;
+            el("guest-property-search").value = selectedOption.textContent;
+            closePropertyList();
+            select.dispatchEvent(new Event("change", { bubbles: true }));
+            var search = el("guest-property-search");
+            if (document.activeElement !== search) {
+              suppressPropertyPickerFocus = true;
+              search.focus();
+            }
+          };
+        }(option));
+        list.appendChild(button);
+      }
+      if (!list.children.length) {
+        var empty = document.createElement("div");
+        empty.className = "property-options-empty";
+        empty.textContent = "No matching properties.";
+        list.appendChild(empty);
+      }
+    }
+    function openPropertyList(query) {
+      activePropertyIndex = -1;
+      renderPropertyOptions(query);
+      el("property-picker").classList.add("is-open");
+      var search = el("guest-property-search");
+      search.removeAttribute("aria-activedescendant");
+      search.setAttribute("aria-expanded", "true");
+      el("property-options").scrollIntoView({ block: "nearest" });
+    }
+    function bindPropertyPicker() {
+      var search = el("guest-property-search");
+      var select = el("guest-property");
+      search.addEventListener("focus", function () {
+        if (suppressPropertyPickerFocus) {
+          suppressPropertyPickerFocus = false;
+          return;
+        }
+        if (select.value && search.value === select.options[select.selectedIndex].textContent) {
+          search.select();
+          openPropertyList("");
+        } else {
+          openPropertyList(search.value);
+        }
+      });
+      search.addEventListener("click", function () {
+        if (!el("property-picker").classList.contains("is-open")) openPropertyList(search.value);
+      });
+      search.addEventListener("input", function () {
+        if (search.value !== (select.selectedIndex > 0 ? select.options[select.selectedIndex].textContent : "")) {
+          select.value = "";
+        }
+        openPropertyList(search.value);
+        updateGuestSubmitState();
+      });
+      search.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          if (!el("property-picker").classList.contains("is-open")) openPropertyList(search.value);
+          var options = el("property-options").querySelectorAll(".property-option");
+          if (!options.length) return;
+          activePropertyIndex = event.key === "ArrowDown"
+            ? Math.min(activePropertyIndex + 1, options.length - 1)
+            : Math.max(activePropertyIndex - 1, 0);
+          for (var i = 0; i < options.length; i++) {
+            options[i].setAttribute("aria-selected", i === activePropertyIndex ? "true" : "false");
+          }
+          search.setAttribute("aria-activedescendant", options[activePropertyIndex].id);
+          options[activePropertyIndex].scrollIntoView({ block: "nearest" });
+        } else if (event.key === "Enter" && el("property-picker").classList.contains("is-open")) {
+          event.preventDefault();
+          var options = el("property-options").querySelectorAll(".property-option");
+          if (options.length) options[activePropertyIndex < 0 ? 0 : activePropertyIndex].click();
+        } else if (event.key === "Escape") {
+          closePropertyList();
+        }
+      });
+      document.addEventListener("click", function (event) {
+        if (!el("property-picker").contains(event.target)) closePropertyList();
+      });
+    }
+    function formatDateLong(date) { return new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(date); }
+    function formatTime(date) { return new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit" }).format(date); }
+    function shortPropertyName(value) {
+      var text = String(value || "").split(/\s*[—–]\s*|\s+-\s+/)[0].trim();
+      var postcode = /\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/i.exec(text);
+      if (postcode) text = text.slice(0, postcode.index + postcode[0].length);
+      return text.replace(/[,\s]+$/, "").trim();
+    }
+
+    function populateTimezones() {
+      var sel = el("tz-select");
+      // Viewings run on London time only; the selector stays fixed.
+      var list = ["Europe/London"];
+      sel.innerHTML = '<option value="Europe/London" selected>Europe/London</option>';
+      sel.value = "Europe/London";
+      TIMEZONE = "Europe/London";
+      sel.addEventListener("change", function () { sel.value = "Europe/London"; TIMEZONE = "Europe/London"; if (selectedDate) { loadSlots(); updateMetaSelectedTime(); } });
+    }
+
+    function renderCalendar() {
+      var m = browsingMonth.getMonth();
+      var y = browsingMonth.getFullYear();
+      el("cal-month-label").innerHTML = months[m] + ' <span class="year">' + y + "</span>";
+      var wh = el("cal-weekdays"); wh.innerHTML = "";
+      for (var i = 0; i < 7; i++) { var d = document.createElement("div"); d.className = "calendar-weekday"; d.textContent = days[i]; wh.appendChild(d); }
+      var grid = el("cal-grid"); grid.innerHTML = "";
+      var first = new Date(y, m, 1);
+      var startDay = first.getDay();
+      var daysInMonth = new Date(y, m + 1, 0).getDate();
+      var today = new Date(); today.setHours(0,0,0,0);
+      var todayKeyValue = todayKey();
+      for (var c = 0; c < 42; c++) {
+        var dayNum = c - startDay + 1;
+        var cellDate = new Date(y, m, dayNum);
+        var isOther = dayNum < 1 || dayNum > daysInMonth;
+        var cell = document.createElement("div"); cell.className = "day-cell";
+        var btn = document.createElement("button"); btn.type = "button"; btn.className = "day-btn";
+        var displayNum = isOther ? new Date(y, m + (dayNum > daysInMonth ? 1 : -1), isOther ? (dayNum > daysInMonth ? dayNum - daysInMonth : daysInMonth + dayNum) : dayNum).getDate() : dayNum;
+        btn.textContent = displayNum;
+        if (isOther) btn.classList.add("is-other-month");
+        if (cellDate < today) btn.disabled = true;
+        if (dayKeyOf(cellDate) === todayKeyValue) btn.disabled = true;
+        if (cellDate.getDay() === 0) btn.disabled = true;
+        if (cellDate >= today && !isOther && !slotsForDay(dayKeyOf(cellDate)).length) btn.disabled = true;
+        if (cellDate.getTime() === today.getTime()) btn.classList.add("is-today");
+        if (selectedDate && cellDate.getTime() === selectedDate.getTime()) btn.classList.add("is-selected");
+        (function (d) { btn.addEventListener("click", function () { selectDate(d); }); })(cellDate);
+        cell.appendChild(btn); grid.appendChild(cell);
+      }
+      el("cal-prev").disabled = (m === new Date().getMonth() && y === new Date().getFullYear());
+    }
+
+    function selectDate(date) {
+      if (dayKeyOf(date) === todayKey() || date.getDay() === 0) return;
+      selectedDate = date;
+      renderCalendar();
+      hide("step-calendar"); show("step-slots");
+      loadSlots();
+    }
+
+    function slotStart(s) { return new Date(s.start || s.startDateTime || s.startsAt || s.from || ""); }
+    function dayKeyOf(d) {
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, "0");
+      var day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+    function todayKey() {
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return dayKeyOf(today);
+    }
+    function slotsForDay(dayKey) {
+      var date = new Date(dayKey + "T00:00:00");
+      if (dayKey === todayKey() || date.getDay() === 0) return [];
+      return (availableSlots || []).filter(function (s) { return dayKeyOf(slotStart(s)) === dayKey; });
+    }
+    function renderDaySidebar() {
+      var sb = el("day-sidebar"); sb.innerHTML = "";
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var items = [];
+      for (var i = 0; i < 14; i++) {
+        var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+        items.push(d);
+      }
+      for (var j = 0; j < items.length; j++) {
+        var day = items[j];
+        var key = dayKeyOf(day);
+        var daySlots = slotsForDay(key);
+        var btn = document.createElement("button"); btn.type = "button"; btn.className = "day-side-item";
+        if (selectedDate && dayKeyOf(selectedDate) === key) btn.classList.add("is-selected");
+        var head = document.createElement("div"); head.className = "day-side-head";
+        var name = document.createElement("span"); name.className = "day-side-name";
+        name.textContent = new Intl.DateTimeFormat("en-GB", { weekday: "short" }).format(day);
+        var date = document.createElement("span"); date.className = "day-side-date";
+        date.textContent = day.getDate();
+        head.appendChild(name); head.appendChild(date);
+        var body = document.createElement("div"); body.className = "day-side-body";
+        if (daySlots.length) {
+          var count = document.createElement("span"); count.className = "day-side-count";
+          count.textContent = daySlots.length + " times";
+          body.appendChild(count);
+        } else {
+          var no = document.createElement("span"); no.className = "day-side-no";
+          no.textContent = key === todayKey() || day.getDay() === 0 ? "Unavailable" : "No times";
+          body.appendChild(no);
+          btn.disabled = true;
+        }
+        btn.appendChild(head); btn.appendChild(body);
+        (function (d) { btn.addEventListener("click", function () { selectDate(d); }); })(day);
+        sb.appendChild(btn);
+      }
+    }
+
+    function loadSlots() {
+      el("slots-day-label").innerHTML = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long" }).format(selectedDate);
+      el("slots-list").innerHTML = "";
+      show("slots-loading"); hide("slots-empty");
+      var dayKey = dayKeyOf(selectedDate);
+      var daySlots = slotsForDay(dayKey);
+      hide("slots-loading");
+      if (!daySlots.length) { show("slots-empty"); return; }
+      renderSlotsList(daySlots);
+    }
+
+    function renderSlotsList(slots) {
+      var list = el("slots-list"); list.innerHTML = "";
+      for (var i = 0; i < slots.length; i++) {
+        var s = normalizeSlot(slots[i], i);
+        if (!s) continue;
+        var btn = document.createElement("button"); btn.type = "button"; btn.className = "slot-btn";
+        btn.innerHTML = '<span>' + s.displayTime + '</span><span class="slot-meta">' + (s.userName ? "with " + s.userName : s.appointmentTypeName || "Viewing") + "</span>";
+        (function (slot) { btn.addEventListener("click", function () { selectSlot(slot); }); })(s);
+        list.appendChild(btn);
+      }
+    }
+
+    function normalizeSlot(slot, index) {
+      if (!slot || typeof slot !== "object") return null;
+      var sv = slot.start || slot.startDateTime || slot.startsAt || slot.from || "";
+      var ev = slot.end || slot.endDateTime || slot.endsAt || slot.to || "";
+      var sd = new Date(sv), ed = new Date(ev);
+      if (isNaN(sd.getTime())) return null;
+      if (isNaN(ed.getTime()) || ed <= sd) ed = new Date(sd.getTime() + 30 * 60 * 1000);
+      return {
+        id: String(slot.id || slot.slotId || [token, index, sd.toISOString()].join("|")),
+        start: sd.toISOString(), end: ed.toISOString(),
+        userId: slot.userId || slot.userID || null,
+        userName: slot.userName || slot.userDisplayName || slot.agentName || "",
+        appointmentTypeId: slot.appointmentTypeId || slot.appointmentTypeID || null,
+        appointmentTypeName: slot.appointmentTypeName || slot.appointmentTypeDescription || slot.typeName || "Viewing",
+        displayTime: formatTime(sd) + " - " + formatTime(ed)
+      };
+    }
+
+    function selectSlot(slot) {
+      var slotDate = new Date(slot.start);
+      if (dayKeyOf(slotDate) === todayKey() || slotDate.getDay() === 0) return;
+      selectedSlot = slot;
+      // Show the confirm step with the selected time + known lead details
+      var sd = new Date(slot.start);
+      el("confirm-when").textContent = formatDateLong(sd) + ", " + formatTime(sd) + " - " + formatTime(new Date(slot.end));
+      el("err-general").classList.remove("is-visible");
+      hide("step-slots"); show("step-form");
+      updateMetaSelectedTime();
+    }
+
+    function updateMetaSelectedTime() {
+      var st = el("meta-selected-time");
+      if (selectedSlot) {
+        var sd = new Date(selectedSlot.start);
+        st.classList.add("is-visible");
+        el("meta-selected-time-text").textContent = formatDateLong(sd) + ", " + formatTime(sd);
+        el("tz-select").classList.add("hidden"); el("tz-text").classList.remove("hidden");
+        el("tz-text").textContent = TIMEZONE.replace(/_/g, " ");
+      } else {
+        st.classList.remove("is-visible");
+        el("tz-select").classList.remove("hidden"); el("tz-text").classList.add("hidden");
+      }
+    }
+
+    function loadAvailableProperties() {
+      var sel = el("guest-property");
+      var search = el("guest-property-search");
+      el("guest-error").classList.remove("is-visible");
+      el("guest-error").textContent = "";
+      sel.innerHTML = '<option value="">Select a property...</option>';
+      sel.disabled = true;
+      search.value = "";
+      search.disabled = true;
+      closePropertyList();
+      return window.fetch(buildAvailablePropertiesUrl(), {
+        credentials: "same-origin",
+        headers: { "Accept": "application/json" }
+      }).then(function (r) {
+        return r.json().catch(function () { return null; }).then(function (payload) {
+           if (!r.ok) throw new Error((payload && payload.error && payload.error.message || "Could not load properties.") + (payload && payload.error && payload.error.requestId ? " Reference: " + payload.error.requestId : ""));
+          return payload || {};
+        });
+      }).then(function (payload) {
+        if (payload.status && payload.status !== "ok") throw new Error(payload.message || "Could not load properties (" + payload.status + ").");
+        var props = Array.isArray(payload.properties) ? payload.properties : [];
+        for (var i = 0; i < props.length; i++) {
+          var p = props[i];
+          var statusId = p && p.statusId;
+          if (!p || !p.id || statusId === null || statusId === undefined || String(statusId).trim() === "" || [0, 1].indexOf(Number(statusId)) === -1) continue;
+          var addr = p.address || p.fullAddress || [p.street, p.town, p.postcode].filter(Boolean).join(", ") || ("Property " + p.id);
+          var displayAddr = String(addr || "").split(",")[0].trim();
+          var ref = p.altReference || p.reference || "";
+          var opt = document.createElement("option");
+          opt.value = String(p.id);
+          opt.textContent = displayAddr || (ref ? String(ref) : "Property " + p.id);
+          opt.dataset.address = addr;
+          sel.appendChild(opt);
+        }
+        sel.disabled = false;
+        search.disabled = false;
+        renderPropertyOptions("");
+      }).catch(function (err) {
+        sel.disabled = false;
+        el("guest-error").textContent = err && err.message ? err.message : "Could not load available properties.";
+        el("guest-error").classList.add("is-visible");
+      });
+    }
+
+    function submitGuest() {
+      if (!guestIdentityComplete() || !guestSelectedProperty()) return;
+      var btn = el("guest-submit");
+      var errEl = el("guest-error");
+      errEl.classList.remove("is-visible"); errEl.textContent = "";
+      btn.disabled = true; btn.textContent = "Looking up times...";
+      var propOpt = el("guest-property").options[el("guest-property").selectedIndex];
+      var identity = {
+        firstName: el("guest-first").value.trim(),
+        lastName: el("guest-last").value.trim(),
+        email: el("guest-email").value.trim(),
+        phone: countryCodes[selectedCountryCodeIndex].code + el("guest-phone").value.trim()
+      };
+      var propertyId = el("guest-property").value;
+      selectedPropertyId = propertyId;
+      var propertyAddress = propOpt ? (propOpt.dataset.address || propOpt.textContent) : "";
+      if (!["guest-first", "guest-last", "guest-email", "guest-phone", "guest-property"].every(function (id) { return el(id).checkValidity(); })) {
+        var invalid = ["guest-first", "guest-last", "guest-email", "guest-phone", "guest-property"].map(el).filter(function (field) { return !field.checkValidity(); })[0];
+        errEl.textContent = invalid && invalid.validationMessage ? invalid.validationMessage : "Complete each required field with valid details.";
+        errEl.classList.add("is-visible");
+        if (invalid) invalid.focus();
+        btn.disabled = false; btn.textContent = "See available times";
+        return;
+      }
+      return fetchWithTimeout(buildBookingGuestUrl(), {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ identity: identity, propertyId: propertyId, propertyAddress: propertyAddress })
+      }, 12000).then(function (r) {
+        return r.json().catch(function () { return null; }).then(function (payload) {
+          if (!r.ok) throw new Error(responseMessage(r, payload, "Could not start guest booking."));
+          return payload || {};
+        });
+      }).then(function (payload) {
+          if (payload.status === "error") throw new Error(payload.message || "Could not start guest booking.");
+        var newToken = payload.token || "";
+        if (!newToken) throw new Error("Guest booking did not return a token.");
+        token = newToken;
+        leadContext.name = [identity.firstName, identity.lastName].filter(Boolean).join(" ");
+        leadContext.email = identity.email;
+        leadContext.phone = identity.phone;
+        if (propertyAddress) {
+          el("meta-property").style.display = "flex";
+          el("meta-property-text").textContent = shortPropertyName(propertyAddress);
+        }
+        hide("step-guest"); show("step-calendar");
+        return loadAvailability();
+      }).catch(function (err) {
+        btn.disabled = false; btn.textContent = "See available times";
+        errEl.textContent = err && err.name === "AbortError" ? "The request timed out. Please retry." : "Could not start guest booking. Check your connection and retry.";
+        errEl.classList.add("is-visible");
+      }).finally(function () {
+        if (!el("step-guest").classList.contains("hidden")) { btn.disabled = false; btn.textContent = "See available times"; updateGuestSubmitState(); }
+      });
+    }
+
+    function loadAvailability() {
+      var url = buildAvailabilityUrl();
+      if (!url) {
+        if (!token) { showBanner("This page expects a booking token in the URL, e.g. /booking/your-token. Open /booking/property-viewing for a demo."); }
+        el("calendar-loading").textContent = "Booking link missing token.";
+        return Promise.resolve();
+      }      el("calendar-loading").textContent = "Loading availability...";
+      el("calendar-error").textContent = ""; el("calendar-error").classList.remove("is-visible"); hide("calendar-error"); hide("calendar-empty"); hide("availability-actions");
+      return fetchWithTimeout(url, {
+        method: "GET", credentials: "same-origin",
+        headers: { "Accept": "application/json" }
+      }, 12000).then(function (r) {
+        return r.json().catch(function () { return null; }).then(function (payload) {
+          if (!r.ok) throw new Error(responseMessage(r, payload, "Could not load availability."));
+          return payload || {};
+        });
+      }).then(function (payload) {
+        if (payload.status === "invalid_token") throw new Error(payload.message || "This booking link is no longer valid.");
+        if (payload.status === "questionnaire_not_completed") {
+          el("calendar-loading").textContent = "Please complete the questionnaire before booking a viewing.";
+          showBanner("Please complete the questionnaire before booking a viewing.");
+          return;
+        }
+        if (payload.status && payload.status !== "ok") {
+          throw new Error(payload.message || "Could not load availability (" + payload.status + ").");
+        }
+        if (payload.status !== "ok") throw new Error("Availability response was incomplete.");
+        // A viewing is already requested for this lead: no second booking.
+        if (payload.booked) { selectedPropertyId = (payload.property || {}).id || selectedPropertyId; renderAlreadyBooked(payload.booked); return; }
+        // Property details (when the enquiry task has a linked property)
+        var prop = payload.property || {};
+        var propAddress = prop.fullAddress || prop.address || prop.propertyAddress || prop.address1
+          || (prop.addressPlus && prop.addressPlus.fullAddress) || "";
+        var propRef = prop.reference || prop.propertyReference || prop.altReference || prop.referenceNumber || "";
+        if (propAddress || propRef) {
+          el("meta-property").style.display = "flex";
+          var propText = "";
+          if (propAddress) propText += propAddress;
+          if (propRef) propText += (propText ? " — " : "") + "Ref " + propRef;
+          el("meta-property-text").textContent = shortPropertyName(propText);
+        }
+        var lead = payload.lead || payload.contact || {};
+        var prop = payload.property || {};
+        if (prop.id) selectedPropertyId = prop.id;
+        leadContext = {
+          name: lead.name || lead.leadName || (lead.firstNames ? [lead.firstNames, lead.lastName || ""].filter(Boolean).join(" ") : "") || leadContext.name || "",
+          email: lead.email || lead.leadEmail || leadContext.email || ""
+        };
+        var leadEl = el("meta-lead");
+        if (leadEl) {
+          if (lead.name || lead.leadName || prop.address || prop.propertyAddress || payload.propertyAddress) {
+            leadEl.style.display = "flex";
+            el("meta-lead-text").textContent = (lead.name || lead.leadName || "") + (prop.address || prop.propertyAddress || payload.propertyAddress ? " — " + (prop.address || prop.propertyAddress || payload.propertyAddress) : "");
+          }
+        }
+        var raw = Array.isArray(payload.availableSlots) ? payload.availableSlots : Array.isArray(payload.slots) ? payload.slots : [];
+        availableSlots = raw;
+        hide("calendar-loading"); show("calendar-content");
+        renderCalendar();
+        if (!availableSlots.some(function (s) { var d = slotStart(s); return !isNaN(d.getTime()) && d >= new Date(); })) {
+          show("calendar-empty"); show("availability-actions");
+        }
+      }).catch(function (err) {
+        hide("calendar-loading"); show("calendar-content"); show("calendar-error"); el("calendar-error").classList.add("is-visible"); show("availability-actions");
+        el("calendar-error").textContent = err && err.name === "AbortError" ? "Availability lookup timed out. Retry, or change the property." : "Could not load availability. Retry, or change the property.";
+      });
+    }
+
+    var bookingSubmitted = false;
+    el("form-submit").addEventListener("click", function () {
+      if (bookingSubmitted) {
+        el("err-general").textContent = "Your viewing request is already being processed. Please wait for the acknowledgement.";
+        el("err-general").classList.add("is-visible");
+        return;
+      }
+      if (!selectedSlot) { el("err-general").textContent = "Please choose a time first."; el("err-general").classList.add("is-visible"); return; }
+      var url = buildConfirmUrl();
+      if (!url) { el("err-general").textContent = "Booking is not configured. Please try again later."; el("err-general").classList.add("is-visible"); return; }
+      var btn = el("form-submit"); btn.disabled = true; btn.textContent = "Sending request...";
+      bookingSubmitted = true;
+      el("err-general").classList.remove("is-visible");
+      window.fetch(url, {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: token,
+          slot: selectedSlot,
+          slotStart: selectedSlot.start,
+          propertyId: selectedPropertyId,
+          name: leadContext.name || "",
+          email: leadContext.email || "",
+          source: "vercel-booking-ui",
+          submittedAt: new Date().toISOString()
+        })
+      }).then(function (r) {
+        return r.json().catch(function () { return null; }).then(function (payload) {
+          if (!r.ok) throw Object.assign(new Error((payload && payload.error && payload.error.message || "Booking request failed.") + (payload && payload.error && payload.error.requestId ? " Reference: " + payload.error.requestId : "")), { payload: payload, booked: payload && payload.error && payload.error.booked });
+          return payload || {};
+        });
+      }).then(function (payload) {
+        if (payload.status === "error") throw Object.assign(new Error(payload.message || "Booking failed."), { payload: payload, booked: payload.booked });
+        renderSuccess(payload);
+      }).catch(function (err) {
+        btn.textContent = "Request viewing";
+        // A viewing is already on file for this lead: show it instead of an error.
+        if (err.booked) { bookingSubmitted = true; btn.disabled = true; renderAlreadyBooked(err.booked); return; }
+        var msg = err && err.message ? err.message : "Could not confirm booking. Please try again.";
+        if (msg.indexOf("already") !== -1 || msg.indexOf("another") !== -1) {
+          msg = "A viewing request may already be on file. Please check your email for an acknowledgement. The appointment still needs confirmation from our team.";
+          btn.disabled = true;
+        } else {
+          btn.disabled = false;
+          bookingSubmitted = false;
+        }
+        el("err-general").textContent = msg;
+        el("err-general").classList.add("is-visible");
+      });
+    });
+
+    function renderAlreadyBooked(booked) {
+      var slot = normalizeSlot(booked && (booked.slot || booked), 0) || selectedSlot;
+      if (slot && slot.start) el("succ-when").textContent = formatDateLong(new Date(slot.start)) + ", " + formatTime(new Date(slot.start)) + " - " + formatTime(new Date(slot.end));
+      hide("step-form"); hide("step-calendar"); hide("step-slots"); hide("step-guest"); show("step-success");
+    }
+
+    function renderSuccess(payload) {
+      var slot = normalizeSlot(payload.slot || payload.confirmedSlot || (payload.appointment || {}), 0) || selectedSlot;
+      el("succ-when").textContent = formatDateLong(new Date(slot.start)) + ", " + formatTime(new Date(slot.start)) + " - " + formatTime(new Date(slot.end));
+      hide("step-form"); show("step-success");
+    }
+
+    el("slots-back").addEventListener("click", function () { selectedDate = null; selectedSlot = null; updateMetaSelectedTime(); show("step-calendar"); hide("step-slots"); renderCalendar(); });
+    el("form-back").addEventListener("click", function () { selectedSlot = null; updateMetaSelectedTime(); show("step-slots"); hide("step-form"); });
+    el("cal-prev").addEventListener("click", function () { browsingMonth = new Date(browsingMonth.getFullYear(), browsingMonth.getMonth() - 1, 1); renderCalendar(); });
+    el("cal-next").addEventListener("click", function () { browsingMonth = new Date(browsingMonth.getFullYear(), browsingMonth.getMonth() + 1, 1); renderCalendar(); });
+
+    ["guest-first", "guest-last", "guest-email", "guest-phone"].forEach(function (id) {
+      el(id).addEventListener("input", updateGuestSubmitState);
+    });
+    el("guest-property").addEventListener("change", updateGuestSubmitState);
+    bindCountryCodePicker();
+    bindPropertyPicker();
+    el("guest-submit").addEventListener("click", submitGuest);
+    el("availability-retry").addEventListener("click", function () { hide("calendar-content"); show("calendar-loading"); loadAvailability(); });
+    el("change-property").addEventListener("click", function () { selectedPropertyId = ""; token = ""; hide("step-calendar"); show("step-guest"); updateGuestSubmitState(); });
+
+    populateTimezones();
+    loadConfig().then(function () {
+      if (token) { return loadAvailability(); }
+      // Guest mode: no token — collect identity + property before unlocking availability.
+      show("step-guest");
+      hide("step-calendar");
+      updateGuestSubmitState();
+      return loadAvailableProperties();
+    }).catch(function (err) { showBanner(err && err.message ? err.message : "Could not load booking configuration."); });
+  })();
+  </script>
+<script>(()=>{const original=window.fetch.bind(window);const viewer='http://127.0.0.1:3003/api/events';const routes=new Set(['/booking/api/available-properties','/booking/api/booking-guest','/booking/api/availability','/booking/api/confirm']);const send=(event,route)=>original(viewer,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({event,route})}).catch(()=>{});send('page_load');document.addEventListener('click',()=>send('click'),true);document.addEventListener('change',()=>send('change'),true);document.addEventListener('submit',()=>send('submit'),true);window.fetch=(...args)=>{let path='';try{path=new URL(typeof args[0]==='string'?args[0]:args[0].url,location.href).pathname}catch{}const route=routes.has(path)?path:'';if(route)send('api_start',route);return original(...args).then(response=>{if(route)send('api_end',route);return response},error=>{if(route)send('api_error',route);else send('fetch_error');throw error})}})()</script>
+</body>
+</html>

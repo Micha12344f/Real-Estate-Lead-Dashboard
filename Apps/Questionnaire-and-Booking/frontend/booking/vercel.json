@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "rewrites": [
+    { "source": "/booking/api/:path*", "destination": "/api/:path*" },
+    { "source": "/booking/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/booking/country-codes.js", "destination": "/country-codes.js" },
+    { "source": "/booking", "destination": "/index.html" },
+    { "source": "/booking/:path*", "destination": "/index.html" }
+  ]
+}

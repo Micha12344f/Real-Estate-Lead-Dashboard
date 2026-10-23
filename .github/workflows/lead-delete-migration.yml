@@ -1,0 +1,57 @@
+name: Lead deletion schema maintenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Fixed maintenance operation
+        required: true
+        type: choice
+        options: [inspect, apply, resume, verify, reconcile]
+      target_sha:
+        description: Full current-main commit SHA with successful trusted Application CI
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: tve-production-deployment
+  cancel-in-progress: false
+
+jobs:
+  lead-delete-schema:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'Micha12344f/thames-valley' &&
+      github.actor == 'Micha12344f' &&
+      github.triggering_actor == 'Micha12344f'
+    runs-on: [self-hosted, linux, x64, thames-valley]
+    timeout-minutes: 300
+    steps:
+      - name: Check out the exact requested main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run fixed lead-delete maintenance action
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          TVE_EVENT_NAME: ${{ github.event_name }}
+          TVE_WORKFLOW_REF: ${{ github.workflow_ref }}
+          TVE_REF: ${{ github.ref }}
+          TVE_RUN_ID: ${{ github.run_id }}
+          TVE_RUN_ATTEMPT: ${{ github.run_attempt }}
+          TARGET_SHA: ${{ inputs.target_sha }}
+          ACTION: ${{ inputs.action }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 Apps/Questionnaire-and-Booking/Tools/lead_delete_maintenance.py \
+            --action "$ACTION" --sha "$TARGET_SHA"

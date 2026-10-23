@@ -1,0 +1,19 @@
+# Environment variables and secrets
+.env
+*.env
+.env.*
+!.env.example
+!.env.sample
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local scratch; never commit raw customer data or identity maps.
+.work/
+raw/
+*.raw.json
+
+# Tenant PII reports produced by Investigate-TveViewingThreads.ps1
+Apps/Investigate-TveViewingThreads.ps1
+Apps/reports/

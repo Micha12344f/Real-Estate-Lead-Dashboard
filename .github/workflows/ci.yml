@@ -1,0 +1,98 @@
+name: Application CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-simulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: Apps/Questionnaire-and-Booking
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: Apps/Questionnaire-and-Booking/backend/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Python requirements
+        run: python -m pip install -r backend/requirements.txt
+      - name: Backend tests
+        working-directory: Apps/Questionnaire-and-Booking/backend
+        run: |
+          python -m compileall -q app tests
+          python -m pytest -q
+      - name: Viewer tests
+        run: python -m pytest -q Tools/test_live_log_viewer.py
+      - name: Offline deployment transaction tests
+        run: |
+          python -m py_compile Tools/deploy_tve.py
+          python -m pytest -q Tools/test_deploy_tve.py
+          python -m py_compile Tools/lead_delete_maintenance.py
+          python -m pytest -q Tools/test_lead_delete_maintenance.py
+          python -m pytest -q Tools/test_ci_registry_sources.py
+      - name: Frontend proxy contract tests
+        run: |
+          node --test Tools/test_frontend_proxies.cjs
+          node --test Tools/test_serve_local_mode.cjs
+          node --test frontend/test-serve-local.js
+          node --test frontend/test-delete-recovery.cjs
+      - name: JavaScript and fixture checks
+        run: |
+          node Tools/check_javascript.cjs
+          node Tools/check_n8n.cjs
+          python -m json.tool Tools/fixture-manifest.json >/dev/null
+          python -m json.tool Tools/fixtures/properties.json >/dev/null
+      - name: Prepare simulation configuration
+        run: |
+          cp .env.example .env
+          cp backend/.env.example backend/.env
+          # Keep generated links and Agent configuration inside this CI sandbox.
+          sed -i 's|^BOOKING_APP_BASE_URL=.*|BOOKING_APP_BASE_URL=http://127.0.0.1:3000/booking|' backend/.env
+          sed -i 's|^QUESTIONNAIRE_APP_BASE_URL=.*|QUESTIONNAIRE_APP_BASE_URL=http://127.0.0.1:3001/questionnaire|' backend/.env
+          sed -i 's|^TVE_AGENT_N8N_WEBHOOK_URL=.*|TVE_AGENT_N8N_WEBHOOK_URL=|' backend/.env
+          sed -i 's|^TVE_AGENT_N8N_WEBHOOK_SECRET=.*|TVE_AGENT_N8N_WEBHOOK_SECRET=|' backend/.env
+          # Enable real encrypted mode changes only inside this disposable stack.
+          vault_key=$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+          sed -i "s|^TVE_SETTINGS_MASTER_KEY=.*|TVE_SETTINGS_MASTER_KEY=$vault_key|" backend/.env
+      - name: Build and start isolated simulation stack
+        run: |
+          registry_override=../../.github/ci-compose-images.yml
+          postgres_image=public.ecr.aws/docker/library/postgres:15-alpine@sha256:f7d23353e1b15400d22ebe31189f4d314b87a4c129cc400c8c2d8d4ca127bf81
+          python_image=public.ecr.aws/docker/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+          node_image=public.ecr.aws/docker/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+          mailpit_image=ghcr.io/axllent/mailpit:v1.27.0@sha256:fb84cfb1c3a33007cfdee8ba5a77b8c6c894de5b1a368372ddc5c965cf5c0b6d
+          # Public ECR's unauthenticated quota is 1 image pull/sec. Pull each
+          # pinned source once, sequentially; Compose must use only local copies.
+          docker pull --platform linux/amd64 "$postgres_image"
+          sleep 2
+          docker pull --platform linux/amd64 "$python_image"
+          sleep 2
+          docker pull --platform linux/amd64 "$node_image"
+          docker pull --platform linux/amd64 "$mailpit_image"
+          docker compose --env-file .env -f backend/docker/docker-compose.yml -f "$registry_override" config --quiet
+          docker compose --env-file .env -f backend/docker/docker-compose.yml -f "$registry_override" up --build --pull never -d
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:3002/healthz >/dev/null && curl -fsS http://127.0.0.1:8001/healthz >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          docker compose --env-file .env -f backend/docker/docker-compose.yml -f "$registry_override" ps
+          exit 1
+      - name: Contact journey integration test
+        run: python Tools/run_sandbox_e2e.py
+      - name: Sandbox and production data isolation integration test
+        run: python Tools/run_sandbox_isolation_e2e.py
+      - name: Stop test stack
+        if: always()
+        run: docker compose --env-file .env -f backend/docker/docker-compose.yml -f ../../.github/ci-compose-images.yml down --remove-orphans

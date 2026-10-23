@@ -1,0 +1,69 @@
+name: Deploy TVE after Application CI
+
+on:
+  workflow_run:
+    workflows: ['Application CI']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tve-production-deployment
+  cancel-in-progress: false
+
+jobs:
+  trusted-current-main:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      deploy: ${{ steps.current.outputs.deploy }}
+    steps:
+      - name: Skip a successful CI run superseded on main
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_sha=$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq .object.sha)
+          if [[ "$current_sha" != "$TESTED_SHA" ]]; then
+            echo 'deploy=false' >> "$GITHUB_OUTPUT"
+            echo 'Successful skip: this tested SHA is no longer current main.'
+          else
+            echo 'deploy=true' >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: trusted-current-main
+    if: >-
+      needs.trusted-current-main.outputs.deploy == 'true' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.repository.full_name == github.repository
+    runs-on: [self-hosted, linux, x64, thames-valley]
+    timeout-minutes: 40
+    steps:
+      - name: Check out the exact successful CI commit and its history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Deploy selected application services under the host lock
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: python3 Apps/Questionnaire-and-Booking/Tools/deploy_tve.py

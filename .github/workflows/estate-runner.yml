@@ -1,0 +1,18 @@
+name: Estate server runner check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-runner:
+    runs-on: [self-hosted, linux, x64, thames-valley]
+    timeout-minutes: 5
+    steps:
+      - name: Verify runner and hosted backend
+        run: |
+          hostname
+          docker compose version
+          curl --fail --silent --show-error http://127.0.0.1:5000/healthz

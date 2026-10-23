@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thames Valley Estates | Questionnaire</title>
+  <meta name="description" content="Complete your Thames Valley Estates questionnaire." />
+  <link rel="icon" type="image/svg+xml" href="/questionnaire/assets/tve-logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #1a1a1a;
+      min-height: 100vh;
+      background: #fafaf8 url("/questionnaire/assets/bywater-street.jpg") center/cover no-repeat fixed;
+    }
+
+    .tve-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, rgba(250, 250, 248, 0.6) 0%, rgba(250, 250, 248, 0.92) 100%);
+    }
+    .tve-header {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .tve-header .tve-logo { width: 36px; height: auto; }
+    .tve-header .tve-name {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-size: 18px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    .tve-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .qv-container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(139, 115, 85, 0.18);
+      border-radius: 2px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+      padding: 28px 36px;
+      overflow: visible;
+    }
+    .qv-hero { text-align: center; margin-bottom: 16px; }
+    .qv-hero h1 {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.1;
+      margin: 0 0 6px;
+    }
+    .qv-hero .qv-subtitle {
+      font-size: 17px;
+      line-height: 1.4;
+      color: #6b6b6b;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .qv-banner {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border: 1px solid #d5b27c;
+      background: #fff8ef;
+      color: #6f4d1f;
+      line-height: 1.4;
+    }
+    .qv-banner.qv-hidden { display: none !important; }
+    .qv-progress-wrap { margin-bottom: 16px; }
+    .qv-progress-bar { height: 3px; background: rgba(139, 115, 85, 0.15); border-radius: 1px; }
+    .qv-progress-bar span { display: block; height: 100%; background: #8b7355; transition: width 0.4s ease; border-radius: 1px; }
+    .qv-step-info { display: flex; justify-content: space-between; margin-top: 6px; font-size: 15px; color: #9b9b9b; letter-spacing: 0.04em; }
+
+    .qv-question-label {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-size: 23px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    .qv-question-label .qv-star { color: #b8860b; font-style: italic; }
+    .qv-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .qv-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      font-size: 17px;
+      color: #3a3a3a;
+    }
+    .qv-option:hover { background: rgba(139, 115, 85, 0.06); border-color: rgba(139, 115, 85, 0.2); }
+    .qv-option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #c4bfb6;
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+    }
+    .qv-option input[type="radio"]:checked { border-color: #8b7355; }
+    .qv-option input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 2.5px;
+      left: 2.5px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #8b7355;
+    }
+
+    .qv-stepper {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 16px;
+      padding: 12px 0;
+    }
+    .qv-stepper-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: #1a1a1a;
+      color: #ffffff;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s ease, transform 0.1s ease;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .qv-stepper-btn:hover { background: #8b7355; }
+    .qv-stepper-btn:active { transform: scale(0.94); }
+    .qv-stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .qv-stepper-value {
+      flex: 1;
+      text-align: center;
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-size: 56px;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1;
+      min-width: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .qv-stepper-unit {
+      font-size: 28px;
+      color: #8b7355;
+      font-weight: 400;
+      margin-right: 6px;
+      font-style: italic;
+    }
+    .qv-subtitle-hint { color: #9b9b9b; font-size: 15px; margin: -10px 0 12px; font-style: italic; }
+
+    .qv-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .qv-btn {
+      border: none;
+      border-radius: 2px;
+      padding: 10px 22px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .qv-btn-back { background: transparent; color: #9b9b9b; padding-left: 0; }
+    .qv-btn-back:hover { color: #1a1a1a; }
+    .qv-btn-next { background: #1a1a1a; color: #fff; }
+    .qv-btn-next:hover { background: #8b7355; }
+    .qv-btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .qv-error { color: #b85450; font-size: 15px; margin-top: 10px; display: none; }
+    .qv-error.qv-visible { display: block; }
+    .qv-consent-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #6b6b6b;
+      line-height: 1.4;
+    }
+    .qv-consent-row input[type="checkbox"] { margin-top: 2px; accent-color: #8b7355; flex-shrink: 0; }
+    .qv-consent-row strong { color: #1a1a1a; }
+
+    .qv-success { text-align: center; padding: 18px 0; }
+    .qv-success h2 {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-size: 27px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .qv-success p { color: #6b6b6b; font-size: 17px; line-height: 1.5; }
+    .qv-success-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      text-decoration: none;
+    }
+    .qv-number-input {
+      width: 100%;
+      max-width: 340px;
+      padding: 12px 14px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      color: #1a1a1a;
+      background: #ffffff;
+      border: 1px solid rgba(139, 115, 85, 0.25);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s ease;
+      margin-bottom: 6px;
+    }
+    .qv-number-input:focus { border-color: #8b7355; }
+    .qv-field-input {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 14px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      color: #1a1a1a;
+      background: #ffffff;
+      border: 1px solid rgba(139, 115, 85, 0.25);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s ease;
+      margin-bottom: 6px;
+    }
+    .qv-field-input:focus { border-color: #8b7355; }
+    .qv-property-picker { width: 100%; max-width: 480px; }
+    .qv-property-picker.qv-open .qv-property-options { display: grid; }
+    .qv-property-options {
+      display: none;
+      max-height: min(240px, 32vh);
+      max-height: min(240px, 32dvh);
+      margin: 0 0 6px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      border: 1px solid rgba(139, 115, 85, 0.25);
+      border-radius: 6px;
+      background: #ffffff;
+    }
+    .qv-property-option {
+      width: 100%;
+      min-width: 0;
+      padding: 12px 14px;
+      border: 0;
+      border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+      background: #ffffff;
+      color: #1a1a1a;
+      font: inherit;
+      font-size: 15px;
+      text-align: left;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+    }
+    .qv-property-option:last-child { border-bottom: 0; }
+    .qv-property-option:hover, .qv-property-option:focus, .qv-property-option[aria-selected="true"] { background: rgba(139, 115, 85, 0.08); outline: none; }
+    .qv-property-empty { padding: 12px 14px; color: #6b6b6b; font-size: 14px; }
+    .qv-textarea-input { max-width: 640px; min-height: 96px; resize: vertical; line-height: 1.5; }
+    .qv-phone-row { display: flex; gap: 10px; max-width: 480px; margin-bottom: 6px; }
+    .qv-phone-country {
+      min-width: 220px;
+      max-width: 280px;
+      padding: 12px 34px 12px 12px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      color: #1a1a1a;
+      background: #ffffff;
+      border: 1px solid rgba(139, 115, 85, 0.25);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15px ease;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238b7355' d='M0 0h10L5 6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .qv-phone-country:focus { border-color: #8b7355; }
+    .qv-phone-input { flex: 1; min-width: 0; }
+    .qv-phone-country-wrap { position: relative; flex-shrink: 0; }
+    .qv-phone-country-list {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 260px;
+      max-height: 176px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid rgba(139, 115, 85, 0.25);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      display: none;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .qv-phone-country-list.qv-open { display: block; }
+    .qv-phone-country-list::-webkit-scrollbar { width: 6px; height: 0; background: transparent; }
+    .qv-phone-country-list::-webkit-scrollbar-thumb { background: rgba(139, 115, 85, 0.35); border-radius: 3px; }
+    .qv-phone-country-list {
+      -ms-overflow-style: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(139, 115, 85, 0.35) transparent;
+    }
+    .qv-country-search-inline {
+      display: none;
+      width: 220px;
+      padding: 12px 34px 12px 12px;
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 15px;
+      color: #1a1a1a;
+      background: #ffffff;
+      border: 1px solid rgba(139, 115, 85, 0.25);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s ease;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+    .qv-country-search-inline.qv-open { display: block; }
+    .qv-country-search-inline:focus { border-color: #8b7355; }
+    .qv-country-options {
+      list-style: none;
+      margin: 0;
+      padding: 4px 0;
+    }
+    .qv-country-options li {
+      padding: 9px 12px;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .qv-country-options li:hover,
+    .qv-country-options li.qv-active {
+      background: rgba(139, 115, 85, 0.1);
+    }
+    .qv-country-options li.qv-no-results {
+      cursor: default;
+      color: #9b9b9b;
+      font-style: italic;
+    }
+    .qv-country-options li.qv-no-results:hover { background: transparent; }
+    .qv-name-row { display: flex; gap: 10px; max-width: 640px; margin-bottom: 6px; }
+    .qv-name-input { flex: 1; min-width: 0; }
+    .qv-hidden { display: none !important; }
+    .qv-footer-note {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 14px;
+      color: rgba(181, 176, 168, 0.8);
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 1024px) {
+      .qv-container { padding: 24px 28px; max-width: 820px; }
+      .qv-hero h1 { font-size: 26px; }
+      .qv-hero .qv-subtitle { font-size: 15px; }
+      .qv-question-label { font-size: 20px; }
+      .qv-option { font-size: 15px; padding: 9px 10px; }
+      .qv-option input[type="radio"] { width: 18px; height: 18px; }
+      .qv-stepper-btn { width: 48px; height: 48px; font-size: 24px; }
+      .qv-stepper-value { font-size: 44px; }
+      .qv-stepper-unit { font-size: 22px; }
+      .qv-step-info, .qv-consent-row, .qv-error { font-size: 13px; }
+      .qv-btn { font-size: 13px; padding: 9px 18px; }
+      .qv-footer-note { font-size: 12px; }
+    }
+
+    @media (max-width: 768px) {
+      body { background-image: none; }
+      .tve-main { padding: 12px; }
+      .qv-container {
+        max-width: 100%;
+        max-height: none;
+        height: auto;
+        min-height: calc(100vh - 80px);
+        padding: 20px 20px 32px;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .tve-header { padding: 12px 16px; }
+      .tve-header .tve-name { font-size: 15px; }
+      .qv-hero { margin-bottom: 12px; }
+      .qv-hero h1 { font-size: 24px; }
+      .qv-hero .qv-subtitle { font-size: 14px; max-width: 100%; }
+      .qv-progress-wrap { margin-bottom: 12px; }
+      .qv-step-info { font-size: 12px; }
+      .qv-question-label { font-size: 18px; margin-bottom: 10px; }
+      .qv-options { grid-template-columns: 1fr; gap: 6px; }
+      .qv-option { font-size: 15px; padding: 14px 14px; min-height: 48px; }
+      .qv-option input[type="radio"] { width: 20px; height: 20px; }
+      .qv-stepper { gap: 12px; padding: 8px 0; }
+      .qv-stepper-btn { width: 56px; height: 56px; font-size: 26px; }
+      .qv-stepper-value { font-size: 36px; }
+      .qv-stepper-unit { font-size: 20px; }
+      .qv-actions { gap: 12px; flex-wrap: wrap; }
+      .qv-btn { font-size: 14px; padding: 12px 22px; min-height: 44px; }
+      .qv-error { font-size: 13px; }
+      .qv-consent-row { font-size: 13px; }
+      .qv-success h2 { font-size: 22px; }
+      .qv-success p { font-size: 15px; }
+      .qv-footer-note { font-size: 11px; }
+      .qv-subtitle-hint { font-size: 13px; }
+      .qv-name-row { flex-direction: column; gap: 8px; }
+      .qv-phone-row { flex-direction: column; align-items: stretch; gap: 8px; }
+      .qv-phone-country-wrap { width: 100%; }
+      .qv-phone-country { width: 100%; min-width: 0; max-width: none; }
+      .qv-phone-input { width: 100%; max-width: none; flex: none; }
+      .qv-phone-country-list { width: 100%; left: 0; right: 0; max-height: min(260px, 35vh); max-height: min(260px, 35dvh); transform: none; }
+      .qv-country-search-inline { width: 100%; }
+      }
+    }
+
+    @media (forced-colors: active) {
+      .qv-stepper-btn, .qv-btn-next { border: 2px solid CanvasText; }
+      .qv-option input[type="radio"] { border: 2px solid CanvasText; }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .qv-hero { margin-bottom: 8px; }
+      .qv-hero h1 { font-size: 18px; margin-bottom: 2px; }
+      .qv-hero .qv-subtitle { display: none; }
+      .qv-progress-wrap { margin-bottom: 8px; }
+      .qv-question-label { font-size: 15px; margin-bottom: 6px; }
+      .qv-container { padding: 12px 16px; }
+    }
+  
+    .qv-stepper-range {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      margin: 14px 0 24px;
+      height: 6px;
+      cursor: pointer;
+      background: rgba(139, 115, 85, 0.2);
+      border-radius: 3px;
+      outline: none;
+    }
+    .qv-stepper-range::-webkit-slider-runnable-track {
+      height: 6px;
+      background: rgba(139, 115, 85, 0.2);
+      border-radius: 3px;
+    }
+    .qv-stepper-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 3px solid #8b7355;
+      cursor: pointer;
+      margin-top: -9px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .qv-stepper-range::-webkit-slider-thumb:hover {
+      background: #8b7355;
+      transform: scale(1.15);
+    }
+    .qv-stepper-range::-moz-range-track {
+      height: 6px;
+      background: rgba(139, 115, 85, 0.2);
+      border-radius: 3px;
+      border: none;
+    }
+    .qv-stepper-range::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 3px solid #8b7355;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+    .qv-stepper-range::-moz-range-thumb:hover {
+      background: #8b7355;
+    }
+</style>
+</head>
+<body>
+  <div class="tve-page">
+    <header class="tve-header">
+      <svg class="tve-logo" viewBox="0 0 415 357" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-label="Thames Valley Estates">
+        <g transform="translate(0,357) scale(0.1,-0.1)" stroke="none">
+          <path fill="#2e73c5" d="M1755 3180 c-115 -49 -219 -94 -230 -99 -40 -20 -114 -51 -119 -51 -3 0 -34 -13 -68 -29 -35 -16 -175 -76 -313 -134 -137 -58 -277 -117 -310 -132 -72 -32 -103 -45 -130 -56 -11 -4 -51 -22 -88 -38 -38 -17 -74 -31 -80 -31 -7 0 -20 -7 -30 -14 -16 -12 -17 -38 -15 -347 l3 -333 60 3 c33 1 121 6 195 11 448 31 534 39 715 70 186 31 223 46 210 83 -6 15 -108 59 -170 73 -16 3 -66 17 -110 31 -303 93 -400 176 -295 252 21 15 54 34 72 41 18 6 42 16 53 21 21 9 63 20 180 46 73 16 112 23 235 42 41 7 98 16 125 21 47 9 168 23 345 40 41 4 165 12 275 19 110 6 274 16 365 21 91 6 280 10 420 11 l255 0 -40 19 c-75 35 -156 70 -161 70 -3 0 -20 6 -37 14 -119 54 -178 79 -372 161 -153 64 -226 95 -270 115 -11 5 -54 23 -95 40 -41 17 -84 35 -95 40 -11 5 -46 20 -78 34 -32 14 -60 26 -63 26 -3 0 -30 11 -60 25 -30 14 -58 25 -62 25 -4 -1 -101 -41 -217 -90z"/>
+          <path fill="#2d4169" d="M3450 2524 c-712 -36 -1175 -115 -1188 -204 -9 -56 86 -103 378 -184 406 -113 640 -252 640 -381 0 -97 -120 -189 -350 -268 -41 -14 -95 -31 -120 -37 -105 -26 -211 -48 -305 -64 -579 -102 -870 -195 -1108 -354 -106 -71 -195 -167 -256 -275 l-21 -37 1235 0 1235 0 0 905 0 905 -42 -2 c-24 -1 -68 -3 -98 -4z"/>
+        </g>
+      </svg>
+      <span class="tve-name">Thames Valley Estates</span>
+    </header>
+
+    <main class="tve-main">
+      <section class="qv-container" id="questionnaire-card">
+        <div class="qv-hero">
+          <h1>Quick enquiry form</h1>
+          <p class="qv-subtitle">A few quick questions to help us prioritise your enquiry and find you the right property faster.</p>
+        </div>
+
+        <div class="qv-banner qv-hidden" id="qv-banner"></div>
+
+        <div class="qv-progress-wrap">
+          <div class="qv-progress-bar"><span id="qv-progress-bar" style="width: 0%"></span></div>
+          <div class="qv-step-info">
+            <span id="qv-step-label">Step 1</span>
+            <span id="qv-step-count">1 of 9</span>
+          </div>
+        </div>
+
+        <form id="qv-form" novalidate>
+          <div id="qv-question-area"></div>
+          <div id="qv-consent-area" class="qv-hidden">
+            <label class="qv-consent-row">
+              <input id="qv-consent-check" type="checkbox" />
+              <span><strong>I confirm the information provided is accurate.</strong><br />I agree for Thames Valley Estates to use these details to progress this property enquiry, and I consent to marketing.</span>
+            </label>
+          </div>
+          <div class="qv-actions">
+            <button type="button" class="qv-btn qv-btn-back qv-hidden" id="qv-back-btn">&larr; Back</button>
+            <button type="submit" class="qv-btn qv-btn-next" id="qv-next-btn">Begin</button>
+          </div>
+          <div class="qv-error" id="qv-error" aria-live="polite"></div>
+        </form>
+
+        <p class="qv-footer-note">This form helps our team prioritise your enquiry so we can get back to you faster.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+var QUESTIONS = [
+        { id: "move_timing", type: "radio", label: "When are you looking to move?", required: true, options: [
+          { label: "Within 1 week", value: "Within 1 week" },
+          { label: "Within 2 weeks", value: "Within 2 weeks" },
+          { label: "Within 3 weeks", value: "Within 3 weeks" },
+          { label: "Within 4 weeks", value: "Within 4 weeks" },
+          { label: "After a month", value: "After a month" }
+        ] },
+        { id: "monthly_budget", type: "stepper", label: "What's your monthly budget?", hint: "£", required: true, step: 50, min: 0, max: 10000, start: 1500, unit: "£" },
+        { id: "rental_duration", type: "radio", label: "How long do you want to rent for?", required: true, options: [
+          { label: "1 - 3 months", value: "1 - 3 months" },
+          { label: "3 - 6 months", value: "3 - 6 months" },
+          { label: "6 months to 1 year", value: "6 months to 1 year" },
+          { label: "Over 1 year", value: "Over 1 year" }
+        ] },
+        { id: "household_income", type: "stepper", label: "What is your household income?", hint: "£", required: true, step: 5000, min: 0, max: 1000000, start: 50000, unit: "£" },
+        { id: "income_proof", type: "radio", label: "Can you provide proof of income?", subtitle: "3 months payslips or accounts", required: true, options: [
+          { label: "Yes", value: "Yes" },
+          { label: "No", value: "No" }
+        ] },
+        { id: "occupants", type: "number", label: "How many occupants are you anticipating to move in with (including yourself and children)?", required: true, min: 1, max: 20, placeholder: "e.g. 2" },
+        { id: "pets", type: "radio", label: "Do you have any pets?", required: true, options: [
+          { label: "No", value: "No" },
+          { label: "Yes - 1 cat or dog", value: "Yes - 1 pet" },
+          { label: "Yes - multiple or larger pets", value: "Yes - multiple" }
+        ] },
+        { id: "smoke_vape", type: "radio", label: "Do any of the occupants smoke?", required: true, options: [
+          { label: "Yes", value: "Yes" },
+          { label: "No", value: "No" }
+        ] },
+        { id: "adverse_credit", type: "radio", label: "Do you have any CCJs, IVAs, or adverse credit history?", required: true, options: [
+          { label: "No", value: "No" },
+          { label: "Yes, but settled or expired", value: "Yes, settled" },
+          { label: "Yes, active or unsatisfied", value: "Yes, active" }
+        ] },
+        { id: "booking_opt_in", type: "radio", label: "Would you like to book a viewing?", required: true, options: [
+          { label: "Yes, book a viewing", value: "opt_in" },
+          { label: "No, not at this time", value: "opt_out" }
+        ] }
+      ];
+
+      // Region-to-calling-code data from Google libphonenumber metadata.
+      var COUNTRY_CODES = [
+        ["Afghanistan", "+93", "AF"],
+        ["Åland Islands", "+358", "AX"],
+        ["Albania", "+355", "AL"],
+        ["Algeria", "+213", "DZ"],
+        ["American Samoa", "+1", "AS"],
+        ["Andorra", "+376", "AD"],
+        ["Angola", "+244", "AO"],
+        ["Anguilla", "+1", "AI"],
+        ["Antigua and Barbuda", "+1", "AG"],
+        ["Argentina", "+54", "AR"],
+        ["Armenia", "+374", "AM"],
+        ["Aruba", "+297", "AW"],
+        ["Ascension Island", "+247", "AC"],
+        ["Australia", "+61", "AU"],
+        ["Austria", "+43", "AT"],
+        ["Azerbaijan", "+994", "AZ"],
+        ["Bahamas", "+1", "BS"],
+        ["Bahrain", "+973", "BH"],
+        ["Bangladesh", "+880", "BD"],
+        ["Barbados", "+1", "BB"],
+        ["Belarus", "+375", "BY"],
+        ["Belgium", "+32", "BE"],
+        ["Belize", "+501", "BZ"],
+        ["Benin", "+229", "BJ"],
+        ["Bermuda", "+1", "BM"],
+        ["Bhutan", "+975", "BT"],
+        ["Bolivia", "+591", "BO"],
+        ["Bosnia and Herzegovina", "+387", "BA"],
+        ["Botswana", "+267", "BW"],
+        ["Brazil", "+55", "BR"],
+        ["British Indian Ocean Territory", "+246", "IO"],
+        ["British Virgin Islands", "+1", "VG"],
+        ["Brunei", "+673", "BN"],
+        ["Bulgaria", "+359", "BG"],
+        ["Burkina Faso", "+226", "BF"],
+        ["Burundi", "+257", "BI"],
+        ["Cambodia", "+855", "KH"],
+        ["Cameroon", "+237", "CM"],
+        ["Canada", "+1", "CA"],
+        ["Cape Verde", "+238", "CV"],
+        ["Caribbean Netherlands", "+599", "BQ"],
+        ["Cayman Islands", "+1", "KY"],
+        ["Central African Republic", "+236", "CF"],
+        ["Chad", "+235", "TD"],
+        ["Chile", "+56", "CL"],
+        ["China", "+86", "CN"],
+        ["Christmas Island", "+61", "CX"],
+        ["Cocos (Keeling) Islands", "+61", "CC"],
+        ["Colombia", "+57", "CO"],
+        ["Comoros", "+269", "KM"],
+        ["Congo", "+242", "CG"],
+        ["Cook Islands", "+682", "CK"],
+        ["Costa Rica", "+506", "CR"],
+        ["Croatia", "+385", "HR"],
+        ["Cuba", "+53", "CU"],
+        ["Curaçao", "+599", "CW"],
+        ["Cyprus", "+357", "CY"],
+        ["Czechia", "+420", "CZ"],
+        ["Denmark", "+45", "DK"],
+        ["Djibouti", "+253", "DJ"],
+        ["Dominica", "+1", "DM"],
+        ["Dominican Republic", "+1", "DO"],
+        ["DR Congo", "+243", "CD"],
+        ["Ecuador", "+593", "EC"],
+        ["Egypt", "+20", "EG"],
+        ["El Salvador", "+503", "SV"],
+        ["Equatorial Guinea", "+240", "GQ"],
+        ["Eritrea", "+291", "ER"],
+        ["Estonia", "+372", "EE"],
+        ["Eswatini", "+268", "SZ"],
+        ["Ethiopia", "+251", "ET"],
+        ["Falkland Islands", "+500", "FK"],
+        ["Faroe Islands", "+298", "FO"],
+        ["Fiji", "+679", "FJ"],
+        ["Finland", "+358", "FI"],
+        ["France", "+33", "FR"],
+        ["French Guiana", "+594", "GF"],
+        ["French Polynesia", "+689", "PF"],
+        ["Gabon", "+241", "GA"],
+        ["Gambia", "+220", "GM"],
+        ["Georgia", "+995", "GE"],
+        ["Germany", "+49", "DE"],
+        ["Ghana", "+233", "GH"],
+        ["Gibraltar", "+350", "GI"],
+        ["Greece", "+30", "GR"],
+        ["Greenland", "+299", "GL"],
+        ["Grenada", "+1", "GD"],
+        ["Guadeloupe", "+590", "GP"],
+        ["Guam", "+1", "GU"],
+        ["Guatemala", "+502", "GT"],
+        ["Guernsey", "+44", "GG"],
+        ["Guinea", "+224", "GN"],
+        ["Guinea-Bissau", "+245", "GW"],
+        ["Guyana", "+592", "GY"],
+        ["Haiti", "+509", "HT"],
+        ["Honduras", "+504", "HN"],
+        ["Hong Kong", "+852", "HK"],
+        ["Hungary", "+36", "HU"],
+        ["Iceland", "+354", "IS"],
+        ["India", "+91", "IN"],
+        ["Indonesia", "+62", "ID"],
+        ["Iran", "+98", "IR"],
+        ["Iraq", "+964", "IQ"],
+        ["Ireland", "+353", "IE"],
+        ["Isle of Man", "+44", "IM"],
+        ["Israel", "+972", "IL"],
+        ["Italy", "+39", "IT"],
+        ["Ivory Coast", "+225", "CI"],
+        ["Jamaica", "+1", "JM"],
+        ["Japan", "+81", "JP"],
+        ["Jersey", "+44", "JE"],
+        ["Jordan", "+962", "JO"],
+        ["Kazakhstan", "+7", "KZ"],
+        ["Kenya", "+254", "KE"],
+        ["Kiribati", "+686", "KI"],
+        ["Kosovo", "+383", "XK"],
+        ["Kuwait", "+965", "KW"],
+        ["Kyrgyzstan", "+996", "KG"],
+        ["Laos", "+856", "LA"],
+        ["Latvia", "+371", "LV"],
+        ["Lebanon", "+961", "LB"],
+        ["Lesotho", "+266", "LS"],
+        ["Liberia", "+231", "LR"],
+        ["Libya", "+218", "LY"],
+        ["Liechtenstein", "+423", "LI"],
+        ["Lithuania", "+370", "LT"],
+        ["Luxembourg", "+352", "LU"],
+        ["Macau", "+853", "MO"],
+        ["Madagascar", "+261", "MG"],
+        ["Malawi", "+265", "MW"],
+        ["Malaysia", "+60", "MY"],
+        ["Maldives", "+960", "MV"],
+        ["Mali", "+223", "ML"],
+        ["Malta", "+356", "MT"],
+        ["Marshall Islands", "+692", "MH"],
+        ["Martinique", "+596", "MQ"],
+        ["Mauritania", "+222", "MR"],
+        ["Mauritius", "+230", "MU"],
+        ["Mayotte", "+262", "YT"],
+        ["Mexico", "+52", "MX"],
+        ["Micronesia", "+691", "FM"],
+        ["Moldova", "+373", "MD"],
+        ["Monaco", "+377", "MC"],
+        ["Mongolia", "+976", "MN"],
+        ["Montenegro", "+382", "ME"],
+        ["Montserrat", "+1", "MS"],
+        ["Morocco", "+212", "MA"],
+        ["Mozambique", "+258", "MZ"],
+        ["Myanmar", "+95", "MM"],
+        ["Namibia", "+264", "NA"],
+        ["Nauru", "+674", "NR"],
+        ["Nepal", "+977", "NP"],
+        ["Netherlands", "+31", "NL"],
+        ["New Caledonia", "+687", "NC"],
+        ["New Zealand", "+64", "NZ"],
+        ["Nicaragua", "+505", "NI"],
+        ["Niger", "+227", "NE"],
+        ["Nigeria", "+234", "NG"],
+        ["Niue", "+683", "NU"],
+        ["Norfolk Island", "+672", "NF"],
+        ["North Korea", "+850", "KP"],
+        ["North Macedonia", "+389", "MK"],
+        ["Northern Mariana Islands", "+1", "MP"],
+        ["Norway", "+47", "NO"],
+        ["Oman", "+968", "OM"],
+        ["Pakistan", "+92", "PK"],
+        ["Palau", "+680", "PW"],
+        ["Palestine", "+970", "PS"],
+        ["Panama", "+507", "PA"],
+        ["Papua New Guinea", "+675", "PG"],
+        ["Paraguay", "+595", "PY"],
+        ["Peru", "+51", "PE"],
+        ["Philippines", "+63", "PH"],
+        ["Poland", "+48", "PL"],
+        ["Portugal", "+351", "PT"],
+        ["Puerto Rico", "+1", "PR"],
+        ["Qatar", "+974", "QA"],
+        ["Réunion", "+262", "RE"],
+        ["Romania", "+40", "RO"],
+        ["Russia", "+7", "RU"],
+        ["Rwanda", "+250", "RW"],
+        ["Saint Barthélemy", "+590", "BL"],
+        ["Saint Helena, Ascension and Tristan da Cunha", "+290", "SH"],
+        ["Saint Kitts and Nevis", "+1", "KN"],
+        ["Saint Lucia", "+1", "LC"],
+        ["Saint Martin", "+590", "MF"],
+        ["Saint Pierre and Miquelon", "+508", "PM"],
+        ["Saint Vincent and the Grenadines", "+1", "VC"],
+        ["Samoa", "+685", "WS"],
+        ["San Marino", "+378", "SM"],
+        ["São Tomé and Príncipe", "+239", "ST"],
+        ["Saudi Arabia", "+966", "SA"],
+        ["Senegal", "+221", "SN"],
+        ["Serbia", "+381", "RS"],
+        ["Seychelles", "+248", "SC"],
+        ["Sierra Leone", "+232", "SL"],
+        ["Singapore", "+65", "SG"],
+        ["Sint Maarten", "+1", "SX"],
+        ["Slovakia", "+421", "SK"],
+        ["Slovenia", "+386", "SI"],
+        ["Solomon Islands", "+677", "SB"],
+        ["Somalia", "+252", "SO"],
+        ["South Africa", "+27", "ZA"],
+        ["South Korea", "+82", "KR"],
+        ["South Sudan", "+211", "SS"],
+        ["Spain", "+34", "ES"],
+        ["Sri Lanka", "+94", "LK"],
+        ["Sudan", "+249", "SD"],
+        ["Suriname", "+597", "SR"],
+        ["Svalbard and Jan Mayen", "+47", "SJ"],
+        ["Sweden", "+46", "SE"],
+        ["Switzerland", "+41", "CH"],
+        ["Syria", "+963", "SY"],
+        ["Taiwan", "+886", "TW"],
+        ["Tajikistan", "+992", "TJ"],
+        ["Tanzania", "+255", "TZ"],
+        ["Thailand", "+66", "TH"],
+        ["Timor-Leste", "+670", "TL"],
+        ["Togo", "+228", "TG"],
+        ["Tokelau", "+690", "TK"],
+        ["Tonga", "+676", "TO"],
+        ["Trinidad and Tobago", "+1", "TT"],
+        ["Tristan da Cunha", "+290", "TA"],
+        ["Tunisia", "+216", "TN"],
+        ["Türkiye", "+90", "TR"],
+        ["Turkmenistan", "+993", "TM"],
+        ["Turks and Caicos Islands", "+1", "TC"],
+        ["Tuvalu", "+688", "TV"],
+        ["Uganda", "+256", "UG"],
+        ["Ukraine", "+380", "UA"],
+        ["United Arab Emirates", "+971", "AE"],
+        ["United Kingdom", "+44", "GB"],
+        ["United States", "+1", "US"],
+        ["United States Virgin Islands", "+1", "VI"],
+        ["Uruguay", "+598", "UY"],
+        ["Uzbekistan", "+998", "UZ"],
+        ["Vanuatu", "+678", "VU"],
+        ["Vatican City", "+39", "VA"],
+        ["Venezuela", "+58", "VE"],
+        ["Vietnam", "+84", "VN"],
+        ["Wallis and Futuna", "+681", "WF"],
+        ["Western Sahara", "+212", "EH"],
+        ["Yemen", "+967", "YE"],
+        ["Zambia", "+260", "ZM"],
+        ["Zimbabwe", "+263", "ZW"]
+      ].map(function (country) {
+        var flag = "";
+        for (var i = 0; i < country[2].length; i++) {
+          flag += String.fromCodePoint(127397 + country[2].charCodeAt(i));
+        }
+        return { name: country[0], code: country[1], flag: flag };
+      });
+      var DEFAULT_COUNTRY_INDEX = COUNTRY_CODES.findIndex(function (country) {
+        return country.name === "United Kingdom";
+      });
+      var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+      function buildIdentityQuestions() {
+        return [
+          { id: "guest_name", type: "name", label: "What is your name?", required: true, identityField: "name" },
+          { id: "guest_email", type: "email", label: "What is your email address?", subtitle: "We'll use this to send you the next steps", required: true, placeholder: "you@example.com", identityField: "email" },
+          { id: "guest_phone", type: "tel", label: "What is your phone number?", subtitle: "Select your country code and enter your local number", required: true, identityField: "phone" },
+          { id: "guest_property_address", type: "select", label: "Which property are you interested in?", subtitle: "Select from our currently available properties", required: true, identityField: "propertyAddress" }
+        ];
+      }
+
+      var IDENTITY_QUESTIONS = [];
+      var configuredQuestionOrder = [];
+      var guestMode = false;
+
+      var runtimeConfig = { questionnaireSubmitBaseUrl: "" };
+      var runtimeConfigError = "";
+      var runtimeConfigReady;
+      var token = getQuestionnaireToken(window.location.pathname);
+      guestMode = !token;
+      if (guestMode) {
+        IDENTITY_QUESTIONS = buildIdentityQuestions();
+      }
+      var answers = {};
+      var availableProperties = [];
+      var propertiesLoadState = "loading";
+      var currentIndex = 0;
+      var history = [];
+
+      var card = document.getElementById("questionnaire-card");
+      var banner = document.getElementById("qv-banner");
+      var questionArea = document.getElementById("qv-question-area");
+      var progressBar = document.getElementById("qv-progress-bar");
+      var stepLabel = document.getElementById("qv-step-label");
+      var stepCount = document.getElementById("qv-step-count");
+      var errorEl = document.getElementById("qv-error");
+      var backBtn = document.getElementById("qv-back-btn");
+      var nextBtn = document.getElementById("qv-next-btn");
+      var form = document.getElementById("qv-form");
+      var consentArea = document.getElementById("qv-consent-area");
+      var consentCheck = document.getElementById("qv-consent-check");
+
+      function visibleQuestions() {
+        var base = guestMode ? IDENTITY_QUESTIONS.concat(QUESTIONS) : QUESTIONS;
+        if (!configuredQuestionOrder.length) return base;
+        var byId = Object.create(null);
+        base.forEach(function (question) { byId[question.id] = question; });
+        var ordered = configuredQuestionOrder.filter(function (id) { return byId[id]; }).map(function (id) { return byId[id]; });
+        var included = Object.create(null);
+        ordered.forEach(function (question) { included[question.id] = true; });
+        return ordered.concat(base.filter(function (question) { return !included[question.id]; }));
+      }
+
+      function esc(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function showBanner(message) {
+        banner.textContent = message || "";
+        banner.classList.toggle("qv-hidden", !message);
+      }
+
+      function setError(message) {
+        errorEl.textContent = message || "";
+        errorEl.classList.toggle("qv-visible", !!message);
+      }
+
+      function getQuestionnaireToken(pathname) {
+        var prefix = "/questionnaire";
+        if (!pathname || pathname === prefix || pathname === prefix + "/") {
+          return "";
+        }
+        if (pathname.indexOf(prefix + "/") !== 0) {
+          return "";
+        }
+        var remainder = pathname.slice(prefix.length + 1).replace(/\/+$/, "");
+        if (!remainder || remainder.indexOf("/") !== -1) {
+          return "";
+        }
+        return decodeURIComponent(remainder);
+      }
+
+      function normaliseRuntimeConfig(config) {
+      return {
+          questionnaireSubmitBaseUrl: String(
+            (config && (config.questionnaireSubmitBaseUrl || config.QUESTIONNAIRE_SUBMIT_BASE_URL)) || ""
+          ).trim().replace(/\/+$/, ""),
+          bookingAppBaseUrl: String((config && config.bookingAppBaseUrl) || "").trim().replace(/\/+$/, ""),
+        };
+      }
+
+      function fetchJson(url) {
+        return window.fetch(url, {
+          method: "GET",
+          cache: "no-store",
+          credentials: "same-origin"
+        }).then(function (response) {
+          if (!response.ok) {
+            throw new Error("Runtime config request failed with status " + response.status);
+          }
+          return response.json();
+        });
+      }
+
+      function loadRuntimeConfig() {
+        if (window.RUNTIME_CONFIG) {
+          runtimeConfig = normaliseRuntimeConfig(window.RUNTIME_CONFIG);
+          runtimeConfigError = runtimeConfig.questionnaireSubmitBaseUrl ? "" : "Questionnaire submission is not configured right now. Please try again shortly.";
+          return Promise.resolve();
+        }
+
+        return fetchJson("/questionnaire/api/runtime-config").catch(function () {
+          return fetchJson("/questionnaire/runtime-config.json");
+        }).then(function (config) {
+          runtimeConfig = normaliseRuntimeConfig(config);
+          runtimeConfigError = runtimeConfig.questionnaireSubmitBaseUrl ? "" : "Questionnaire submission is not configured right now. Please try again shortly.";
+        }).catch(function () {
+          runtimeConfig = { questionnaireSubmitBaseUrl: "" };
+          runtimeConfigError = "We could not load the questionnaire configuration. Please try again in a moment.";
+        });
+      }
+
+      function loadAvailableProperties() {
+        if (!guestMode) {
+          return Promise.resolve();
+        }
+        var bookingBase = runtimeConfig.bookingAppBaseUrl || "";
+        return window.fetch(bookingBase + "/api/available-properties", {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          credentials: "same-origin"
+        }).then(function (response) {
+          if (!response.ok) {
+            throw new Error("Available properties request failed with status " + response.status);
+          }
+          return response.json();
+        }).then(function (data) {
+          if (data && data.status === "ok" && Array.isArray(data.properties)) {
+            availableProperties = data.properties.filter(function (property) {
+              var statusId = property && property.statusId;
+              return property && property.id !== undefined && property.id !== null && property.address && statusId !== null && statusId !== undefined && String(statusId).trim() !== "" && [0, 1].indexOf(Number(statusId)) !== -1;
+            });
+            propertiesLoadState = availableProperties.length ? "loaded" : "empty";
+          } else {
+            throw new Error("Available properties response was invalid");
+          }
+        }).catch(function () {
+          availableProperties = [];
+          propertiesLoadState = "error";
+        });
+      }
+
+      function render() {
+        var visible = visibleQuestions();
+        var question = visible[currentIndex];
+        if (!question) {
+          showSuccess();
+          return;
+        }
+
+        stepLabel.textContent = "Step " + (currentIndex + 1);
+        stepCount.textContent = (currentIndex + 1) + " of " + visible.length;
+        progressBar.style.width = ((currentIndex / visible.length) * 100) + "%";
+        setError("");
+
+        var html = '<div class="qv-question-label">' + esc(question.label);
+        if (question.required) {
+          html += ' <span class="qv-star">*</span>';
+        }
+        html += '</div>';
+
+        if (question.subtitle) {
+          html += '<p class="qv-subtitle-hint">' + esc(question.subtitle) + '</p>';
+        }
+
+        if (question.type === "radio") {
+          html += '<div class="qv-options">';
+          for (var i = 0; i < question.options.length; i++) {
+            var option = question.options[i];
+            var checked = answers[question.id] === option.value ? ' checked' : '';
+            html += '<label class="qv-option"><input type="radio" name="' + esc(question.id) + '" value="' + esc(option.value) + '"' + checked + '><span>' + esc(option.label) + '</span></label>';
+          }
+          html += '</div>';
+        } else if (question.type === "number") {
+          var numVal = answers[question.id] !== undefined ? answers[question.id] : "";
+          html += '<input class="qv-number-input" type="number" min="' + (question.min === undefined ? 1 : question.min) + '" max="' + (question.max === undefined ? 99 : question.max) + '" name="' + esc(question.id) + '" value="' + esc(numVal) + '" placeholder="' + esc(question.placeholder || "") + '" data-field="' + esc(question.id) + '" />';
+        } else if (question.type === "text") {
+          var textVal = answers[question.id] !== undefined ? answers[question.id] : "";
+          html += '<input class="qv-field-input" type="text" name="' + esc(question.id) + '" value="' + esc(textVal) + '" placeholder="' + esc(question.placeholder || "") + '" data-field="' + esc(question.id) + '" autocomplete="given-name" />';
+        } else if (question.type === "name") {
+          var firstNameVal = answers[question.id] && answers[question.id].firstName !== undefined ? answers[question.id].firstName : "";
+          var lastNameVal = answers[question.id] && answers[question.id].lastName !== undefined ? answers[question.id].lastName : "";
+          html += '<div class="qv-name-row">';
+          html += '<input class="qv-field-input qv-name-input" type="text" name="' + esc(question.id) + '_firstName" value="' + esc(firstNameVal) + '" placeholder="First name" data-field="' + esc(question.id) + '" data-role="firstName" autocomplete="given-name" />';
+          html += '<input class="qv-field-input qv-name-input" type="text" name="' + esc(question.id) + '_lastName" value="' + esc(lastNameVal) + '" placeholder="Last name" data-field="' + esc(question.id) + '" data-role="lastName" autocomplete="family-name" />';
+          html += '</div>';
+        } else if (question.type === "email") {
+          var emailVal = answers[question.id] !== undefined ? answers[question.id] : "";
+          html += '<input class="qv-field-input" type="email" name="' + esc(question.id) + '" value="' + esc(emailVal) + '" placeholder="' + esc(question.placeholder || "") + '" data-field="' + esc(question.id) + '" autocomplete="email" />';
+        } else if (question.type === "textarea") {
+          var taVal = answers[question.id] !== undefined ? answers[question.id] : "";
+          html += '<textarea class="qv-field-input qv-textarea-input" name="' + esc(question.id) + '" placeholder="' + esc(question.placeholder || "") + '" data-field="' + esc(question.id) + '">' + esc(taVal) + '</textarea>';
+        } else if (question.type === "select") {
+          var selVal = answers[question.id] && answers[question.id].id !== undefined ? answers[question.id].id : "";
+          var propertySelectId = "qv-field-" + question.id;
+          var placeholder = propertiesLoadState === "loading" ? "Loading properties…" : propertiesLoadState === "error" ? "Properties are temporarily unavailable" : propertiesLoadState === "empty" ? "No properties are currently available" : "Select a property…";
+          html += '<div class="qv-property-picker" id="' + esc(propertySelectId) + '-picker">';
+          html += '<input class="qv-field-input qv-property-search" id="' + esc(propertySelectId) + '-search" type="text" role="combobox" aria-label="' + esc(question.label) + '" aria-required="' + (question.required ? "true" : "false") + '" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="' + esc(propertySelectId) + '-options" aria-describedby="' + esc(propertySelectId) + '-help" placeholder="' + esc(placeholder) + '" autocomplete="off"' + (propertiesLoadState === "loaded" ? "" : " disabled") + ' value="' + esc(answers[question.id] && (answers[question.id].label || answers[question.id].address) || "") + '" />';
+          html += '<div class="qv-property-options" id="' + esc(propertySelectId) + '-options" role="listbox" aria-label="Available properties"></div>';
+          html += '<select class="qv-hidden" id="' + esc(propertySelectId) + '" name="' + esc(question.id) + '" data-field="' + esc(question.id) + '" aria-describedby="' + esc(propertySelectId) + '-help"' + (question.required ? " required" : "") + (propertiesLoadState === "loaded" ? "" : " disabled") + '>';
+          html += '<option value="" disabled' + (selVal ? "" : " selected") + '>' + esc(placeholder) + '</option>';
+          for (var s = 0; s < availableProperties.length; s++) {
+            var prop = availableProperties[s];
+            var selectedAttr = String(prop.id) === String(selVal) ? " selected" : "";
+            var label = String(prop.address || "").split(",")[0].trim();
+            var searchText = [prop.address || "", prop.altReference || "", prop.reference || ""].join(" ");
+            html += '<option value="' + esc(prop.id) + '" data-search="' + esc(searchText) + '"' + selectedAttr + '>' + esc(label) + '</option>';
+          }
+          html += '</select>';
+          html += '</div>';
+          if (propertiesLoadState === "error") {
+            html += '<p class="qv-subtitle-hint" id="' + esc(propertySelectId) + '-help" role="status">We could not load available properties. Please refresh to try again.</p>';
+          } else if (propertiesLoadState === "empty") {
+            html += '<p class="qv-subtitle-hint" id="' + esc(propertySelectId) + '-help" role="status">There are no available properties to select right now. Please contact our team for help.</p>';
+          } else {
+            html += '<span class="qv-hidden" id="' + esc(propertySelectId) + '-help">' + esc(question.subtitle || "") + '</span>';
+          }
+        } else if (question.type === "tel") {
+          var phoneData = answers[question.id] !== undefined ? answers[question.id] : {};
+          var selectedCountryIndex = phoneData.countryIndex !== undefined ? phoneData.countryIndex : DEFAULT_COUNTRY_INDEX;
+          var localNumber = phoneData.localNumber || "";
+          var selectedCc = COUNTRY_CODES[selectedCountryIndex];
+          html += '<div class="qv-phone-row">';
+          html += '<div class="qv-phone-country-wrap">';
+          html += '<button type="button" class="qv-phone-country" data-field="' + esc(question.id) + '" data-role="country-btn" aria-label="Country code">' + esc(selectedCc.flag + ' ' + selectedCc.name + ' (' + selectedCc.code + ')') + '</button>';
+          html += '<input type="text" class="qv-phone-country qv-country-search-inline" data-field="' + esc(question.id) + '" data-role="country-search" placeholder="Search country or code" />';
+          html += '<div class="qv-phone-country-list" data-field="' + esc(question.id) + '" data-role="country-list" role="listbox" aria-label="Country code">';
+          html += '<ul class="qv-country-options" data-field="' + esc(question.id) + '" data-role="country-options">';
+          for (var c = 0; c < COUNTRY_CODES.length; c++) {
+            var cc = COUNTRY_CODES[c];
+            var activeClass = c === selectedCountryIndex ? ' class="qv-active"' : '';
+            html += '<li role="option" data-index="' + c + '"' + activeClass + '>' + cc.flag + ' ' + esc(cc.name) + ' (' + cc.code + ')</li>';
+          }
+          html += '</ul>';
+          html += '</div>';
+          html += '</div>';
+          html += '<input class="qv-field-input qv-phone-input" type="tel" name="' + esc(question.id) + '" value="' + esc(localNumber) + '" placeholder="for example 7123456789" data-field="' + esc(question.id) + '" data-role="local" autocomplete="tel-national" />';
+          html += '</div>';
+        } else if (question.type === "stepper") {
+          var step = question.step || 50;
+          var min = question.min === undefined ? 0 : question.min;
+          var max = question.max === undefined ? 99999999 : question.max;
+          var start = question.start === undefined ? 1500 : question.start;
+          var currentValue = answers[question.id] !== undefined ? answers[question.id] : start;
+          if (currentValue < min) { currentValue = min; }
+          if (currentValue > max) { currentValue = max; }
+          var displayValue = (currentValue >= 1000000 && question.id === "household_income") ? ">1,000,000" : currentValue.toLocaleString();
+          html += '<div class="qv-stepper" data-field="' + esc(question.id) + '" data-step="' + step + '" data-min="' + min + '" data-max="' + max + '">';
+          html += '<div class="qv-stepper-value"><span class="qv-stepper-unit">' + esc(question.unit || "") + '</span><span class="qv-stepper-num">' + displayValue + '</span></div>';
+          html += '</div>';
+          html += '<input type="range" class="qv-stepper-range" data-field="' + esc(question.id) + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + currentValue + '" aria-label="Monthly budget slider" />';
+        }
+
+        questionArea.innerHTML = html;
+        backBtn.classList.toggle("qv-hidden", currentIndex === 0);
+
+        if (currentIndex === visible.length - 1) {
+          nextBtn.textContent = "Submit";
+          consentArea.classList.remove("qv-hidden");
+        } else {
+          nextBtn.textContent = currentIndex === 0 ? "Begin" : "Next →";
+          consentArea.classList.add("qv-hidden");
+        }
+
+        if (question.type === "stepper") {
+          setupStepper(question);
+        }
+        if (question.type === "tel") {
+          setupPhone(question);
+        }
+        if (question.type === "name") {
+          setupName(question);
+        }
+        if (question.type === "select") {
+          setupSelect(question);
+        }
+      }
+
+      function setupStepper(question) {
+        var container = questionArea.querySelector(".qv-stepper");
+        if (!container) {
+          return;
+        }
+
+        var field = question.id;
+        var step = parseInt(container.getAttribute("data-step"), 10) || 50;
+        var min = parseInt(container.getAttribute("data-min"), 10) || 0;
+        var max = parseInt(container.getAttribute("data-max"), 10) || 99999999;
+        var numberEl = container.querySelector(".qv-stepper-num");
+        var rangeInput = questionArea.querySelector('.qv-stepper-range[data-field="' + field + '"]');
+
+        function update(value) {
+          if (value < min) { value = min; }
+          if (value > max) { value = max; }
+          answers[field] = value;
+          if (numberEl) {
+            if (value >= 1000000 && field === "household_income") {
+              numberEl.textContent = ">1,000,000";
+            } else {
+              numberEl.textContent = value.toLocaleString();
+            }
+          }
+          if (rangeInput) {
+            rangeInput.value = value;
+          }
+        }
+
+        var start = question.start === undefined ? 1500 : question.start;
+        update(answers[field] !== undefined ? answers[field] : start);
+      }
+
+      function setupPhone(question) {
+        var field = question.id;
+        var countryBtn = questionArea.querySelector('.qv-phone-country[data-role="country-btn"][data-field="' + field + '"]');
+        var searchInput = questionArea.querySelector('.qv-country-search-inline[data-field="' + field + '"]');
+        var countryList = questionArea.querySelector('.qv-phone-country-list[data-field="' + field + '"]');
+        var optionsList = questionArea.querySelector('.qv-country-options[data-field="' + field + '"]');
+        var localInput = questionArea.querySelector('input.qv-phone-input[data-field="' + field + '"]');
+        if (!countryBtn || !searchInput || !countryList || !optionsList || !localInput) {
+          return;
+        }
+        if (answers[field] === undefined) {
+          answers[field] = { countryIndex: DEFAULT_COUNTRY_INDEX, localNumber: "" };
+        }
+
+        function renderOptions(filter) {
+          var query = (filter || "").toLowerCase().trim();
+          optionsList.innerHTML = "";
+          var matches = 0;
+          for (var c = 0; c < COUNTRY_CODES.length; c++) {
+            var cc = COUNTRY_CODES[c];
+            var text = (cc.name + " " + cc.code).toLowerCase();
+            var codeDigits = cc.code.replace(/\D/g, "");
+            if (!query || text.indexOf(query) !== -1 || codeDigits.indexOf(query.replace(/\D/g, "")) !== -1) {
+              var activeClass = c === answers[field].countryIndex ? ' qv-active' : '';
+              var li = document.createElement("li");
+              li.className = "qv-country-option" + activeClass;
+              li.setAttribute("role", "option");
+              li.setAttribute("data-index", c);
+              li.textContent = cc.flag + " " + cc.name + " (" + cc.code + ")";
+              li.addEventListener("click", function () {
+                var idx = parseInt(this.getAttribute("data-index"), 10);
+                answers[field].countryIndex = idx;
+                var selected = COUNTRY_CODES[idx];
+                countryBtn.textContent = selected.flag + " " + selected.name + " (" + selected.code + ")";
+                closeList();
+              });
+              optionsList.appendChild(li);
+              matches++;
+            }
+          }
+          if (matches === 0) {
+            var noResults = document.createElement("li");
+            noResults.className = "qv-no-results";
+            noResults.textContent = "No countries found";
+            optionsList.appendChild(noResults);
+          }
+        }
+
+        function openList() {
+          countryBtn.classList.add("qv-hidden");
+          searchInput.classList.add("qv-open");
+          countryList.classList.add("qv-open");
+          searchInput.value = "";
+          renderOptions("");
+          searchInput.focus();
+          var active = optionsList.querySelector(".qv-active");
+          if (active) {
+            active.scrollIntoView({ block: "nearest" });
+          }
+        }
+
+        function closeList() {
+          countryList.classList.remove("qv-open");
+          searchInput.classList.remove("qv-open");
+          countryBtn.classList.remove("qv-hidden");
+          searchInput.value = "";
+          renderOptions("");
+        }
+
+        countryBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openList();
+        });
+
+        searchInput.addEventListener("input", function () {
+          renderOptions(searchInput.value);
+        });
+
+        searchInput.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closeList();
+            countryBtn.focus();
+          }
+        });
+
+        searchInput.addEventListener("blur", function () {
+          setTimeout(function () {
+            if (!countryList.contains(document.activeElement) && document.activeElement !== searchInput) {
+              closeList();
+            }
+          }, 150);
+        });
+
+        document.addEventListener("click", function (e) {
+          if (!countryList.contains(e.target) && e.target !== countryBtn && e.target !== searchInput) {
+            closeList();
+          }
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && countryList.classList.contains("qv-open")) {
+            closeList();
+          }
+        });
+
+        localInput.addEventListener("input", function () {
+          answers[field].localNumber = localInput.value;
+        });
+      }
+
+      function setupName(question) {
+        var field = question.id;
+        var firstInput = questionArea.querySelector('input[data-field="' + field + '"][data-role="firstName"]');
+        var lastInput = questionArea.querySelector('input[data-field="' + field + '"][data-role="lastName"]');
+        if (!firstInput || !lastInput) {
+          return;
+        }
+        if (answers[field] === undefined) {
+          answers[field] = { firstName: "", lastName: "" };
+        }
+
+        firstInput.addEventListener("input", function () {
+          answers[field].firstName = firstInput.value;
+        });
+        lastInput.addEventListener("input", function () {
+          answers[field].lastName = lastInput.value;
+        });
+      }
+
+      function setupSelect(question) {
+        var field = question.id;
+        var selectEl = questionArea.querySelector('select[data-field="' + field + '"]');
+        var searchEl = questionArea.querySelector(".qv-property-search");
+        var pickerEl = questionArea.querySelector(".qv-property-picker");
+        var optionsEl = questionArea.querySelector(".qv-property-options");
+        if (!selectEl) {
+          return;
+        }
+        var activeIndex = -1;
+        var suppressPickerFocus = false;
+
+        function closeList() {
+          pickerEl.classList.remove("qv-open");
+          searchEl.setAttribute("aria-expanded", "false");
+          searchEl.removeAttribute("aria-activedescendant");
+        }
+
+        function renderOptions(query) {
+          var normalizedQuery = (query || "").trim().toLowerCase();
+          optionsEl.innerHTML = "";
+          for (var i = 1; i < selectEl.options.length; i++) {
+            var option = selectEl.options[i];
+            var searchText = (option.textContent + " " + option.getAttribute("data-search")).toLowerCase();
+            if (searchText.indexOf(normalizedQuery) === -1) {
+              continue;
+            }
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "qv-property-option";
+            button.id = "qv-property-option-" + i;
+            button.setAttribute("role", "option");
+            button.setAttribute("aria-selected", "false");
+            button.textContent = option.textContent;
+            button.addEventListener("click", function (selectedOption) {
+              return function () {
+                selectEl.value = selectedOption.value;
+                searchEl.value = selectedOption.textContent;
+                selectEl.dispatchEvent(new Event("change", { bubbles: true }));
+                closeList();
+                if (document.activeElement !== searchEl) {
+                  suppressPickerFocus = true;
+                  searchEl.focus();
+                }
+              };
+            }(option));
+            optionsEl.appendChild(button);
+          }
+          if (!optionsEl.children.length) {
+            var empty = document.createElement("div");
+            empty.className = "qv-property-empty";
+            empty.textContent = "No matching properties.";
+            optionsEl.appendChild(empty);
+          }
+        }
+
+        function openList(query) {
+          activeIndex = -1;
+          renderOptions(query);
+          pickerEl.classList.add("qv-open");
+          searchEl.removeAttribute("aria-activedescendant");
+          searchEl.setAttribute("aria-expanded", "true");
+          optionsEl.scrollIntoView({ block: "nearest" });
+        }
+
+        searchEl.addEventListener("focus", function () {
+          if (suppressPickerFocus) {
+            suppressPickerFocus = false;
+            return;
+          }
+          if (selectEl.value && searchEl.value === selectEl.options[selectEl.selectedIndex].textContent) {
+            searchEl.select();
+            openList("");
+          } else {
+            openList(searchEl.value);
+          }
+        });
+        searchEl.addEventListener("click", function () {
+          if (!pickerEl.classList.contains("qv-open")) {
+            openList(searchEl.value);
+          }
+        });
+        searchEl.addEventListener("input", function () {
+          if (searchEl.value !== (selectEl.selectedIndex > 0 ? selectEl.options[selectEl.selectedIndex].textContent : "")) {
+            selectEl.value = "";
+          }
+          openList(searchEl.value);
+        });
+        searchEl.addEventListener("keydown", function (event) {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            if (!pickerEl.classList.contains("qv-open")) {
+              openList(searchEl.value);
+            }
+            var options = optionsEl.querySelectorAll(".qv-property-option");
+            if (!options.length) {
+              return;
+            }
+            activeIndex = event.key === "ArrowDown"
+              ? Math.min(activeIndex + 1, options.length - 1)
+              : Math.max(activeIndex - 1, 0);
+            for (var i = 0; i < options.length; i++) {
+              options[i].setAttribute("aria-selected", i === activeIndex ? "true" : "false");
+            }
+            searchEl.setAttribute("aria-activedescendant", options[activeIndex].id);
+            options[activeIndex].scrollIntoView({ block: "nearest" });
+          } else if (event.key === "Enter" && pickerEl.classList.contains("qv-open")) {
+            event.preventDefault();
+            var options = optionsEl.querySelectorAll(".qv-property-option");
+            if (options.length) {
+              options[activeIndex < 0 ? 0 : activeIndex].click();
+            }
+          } else if (event.key === "Escape") {
+            closeList();
+          }
+        });
+        document.addEventListener("click", function (event) {
+          if (!pickerEl.contains(event.target)) {
+            closeList();
+          }
+        });
+        selectEl.addEventListener("change", function () {
+          var id = selectEl.value;
+          var selected = null;
+          for (var i = 0; i < availableProperties.length; i++) {
+            if (String(availableProperties[i].id) === String(id)) {
+              selected = availableProperties[i];
+              break;
+            }
+          }
+          if (selected) {
+            var label = String(selected.address || "").split(",")[0].trim();
+            answers[field] = { id: selected.id, address: selected.address, label: label };
+            searchEl.value = label;
+          } else {
+            answers[field] = null;
+            searchEl.value = "";
+          }
+        });
+        if (selectEl.value) {
+          searchEl.value = selectEl.options[selectEl.selectedIndex].textContent;
+        }
+      }
+
+      function validateCurrentQuestion() {
+        var visible = visibleQuestions();
+        var question = visible[currentIndex];
+        if (!question) {
+          return true;
+        }
+
+        if (question.type === "radio") {
+          var selected = questionArea.querySelector('input[name="' + question.id + '"]:checked');
+          if (question.required && !selected) {
+            setError("Please answer this question before continuing.");
+            return false;
+          }
+          if (selected) {
+            answers[question.id] = selected.value;
+          }
+        } else if (question.type === "number") {
+          var numInput = questionArea.querySelector('input[data-field="' + question.id + '"]');
+          var numVal = numInput ? numInput.value.trim() : "";
+          if (question.required && !numVal) {
+            setError("Please enter a number before continuing.");
+            return false;
+          }
+          if (numVal) {
+            var n = Number(numVal);
+            if (Number.isFinite(n) && n >= (question.min || 1)) {
+              answers[question.id] = n;
+            } else {
+              setError("Please enter a valid number.");
+              return false;
+            }
+          }
+        } else if (question.type === "text") {
+          var textInput = questionArea.querySelector('input[data-field="' + question.id + '"]');
+          var textVal = textInput ? textInput.value.trim() : "";
+          if (question.required && !textVal) {
+            setError("Please enter your answer before continuing.");
+            return false;
+          }
+          answers[question.id] = textVal;
+        } else if (question.type === "name") {
+          var firstNameInput = questionArea.querySelector('input[data-field="' + question.id + '"][data-role="firstName"]');
+          var lastNameInput = questionArea.querySelector('input[data-field="' + question.id + '"][data-role="lastName"]');
+          var firstName = firstNameInput ? firstNameInput.value.trim() : "";
+          var lastName = lastNameInput ? lastNameInput.value.trim() : "";
+          if (question.required && (!firstName || !lastName)) {
+            setError("Please enter both your first name and last name before continuing.");
+            return false;
+          }
+          answers[question.id] = { firstName: firstName, lastName: lastName };
+        } else if (question.type === "email") {
+          var emailInput = questionArea.querySelector('input[data-field="' + question.id + '"]');
+          var emailVal = emailInput ? emailInput.value.trim() : "";
+          if (question.required && !emailVal) {
+            setError("Please enter your email address before continuing.");
+            return false;
+          }
+          if (emailVal && !EMAIL_REGEX.test(emailVal)) {
+            setError("Please enter a valid email address.");
+            return false;
+          }
+          answers[question.id] = emailVal;
+        } else if (question.type === "textarea") {
+          var taInput = questionArea.querySelector('textarea[data-field="' + question.id + '"]');
+          var taVal = taInput ? taInput.value.trim() : "";
+          if (question.required && !taVal) {
+            setError("Please enter your answer before continuing.");
+            return false;
+          }
+          answers[question.id] = taVal;
+        } else if (question.type === "select") {
+          var selInput = questionArea.querySelector('select[data-field="' + question.id + '"]');
+          if (propertiesLoadState !== "loaded") {
+            setError(propertiesLoadState === "error" ? "We could not load available properties. Please refresh to try again." : "No properties are currently available to select.");
+            return false;
+          }
+          var selId = selInput ? selInput.value : "";
+          if (question.required && !selId) {
+            setError("Please select a property before continuing.");
+            return false;
+          }
+          var selProp = null;
+          for (var sp = 0; sp < availableProperties.length; sp++) {
+            if (String(availableProperties[sp].id) === String(selId)) {
+              selProp = availableProperties[sp];
+              break;
+            }
+          }
+          if (selProp) {
+             answers[question.id] = { id: selProp.id, address: selProp.address, label: selProp.address + (selProp.altReference ? " (" + selProp.altReference + ")" : "") };
+          } else {
+            answers[question.id] = null;
+          }
+        } else if (question.type === "tel") {
+          var phoneData = answers[question.id] || {};
+          var countryIndex = phoneData.countryIndex !== undefined ? phoneData.countryIndex : DEFAULT_COUNTRY_INDEX;
+          var localNumber = (phoneData.localNumber || "").replace(/[^\d]/g, "");
+          if (question.required && !localNumber) {
+            setError("Please enter your phone number before continuing.");
+            return false;
+          }
+          if (localNumber && localNumber.length < 7) {
+            setError("Please enter a valid phone number (at least 7 digits).");
+            return false;
+          }
+          answers[question.id] = {
+            countryIndex: countryIndex,
+            localNumber: phoneData.localNumber || "",
+            fullNumber: COUNTRY_CODES[countryIndex].code + localNumber
+          };
+        } else if (question.type === "stepper") {
+          var value = answers[question.id];
+          if (question.required && (value === undefined || value === null)) {
+            setError("Please enter a valid monthly budget.");
+            return false;
+          }
+        }
+
+        setError("");
+        return true;
+      }
+
+      function buildSubmissionUrl() {
+        if (!runtimeConfig.questionnaireSubmitBaseUrl) {
+          return "";
+        }
+        // Token is sent in the POST body, not in the URL path.
+        // n8n webhook no longer uses :token path parameter.
+        return runtimeConfig.questionnaireSubmitBaseUrl;
+      }
+
+      function buildIdentityPayload() {
+        if (!guestMode) {
+          return null;
+        }
+        var phoneData = answers["guest_phone"] || {};
+        var countryIndex = phoneData.countryIndex !== undefined ? phoneData.countryIndex : DEFAULT_COUNTRY_INDEX;
+        var localDigits = (phoneData.localNumber || "").replace(/[^\d]/g, "");
+        var nameData = answers["guest_name"] || {};
+        var propertyData = answers["guest_property_address"] || {};
+        return {
+          firstName: nameData.firstName || "",
+          lastName: nameData.lastName || "",
+          email: answers["guest_email"] || "",
+          phone: COUNTRY_CODES[countryIndex].code + localDigits,
+          propertyAddress: propertyData.address || "",
+          propertyId: propertyData.id !== undefined ? propertyData.id : "",
+          propertyLabel: propertyData.label || propertyData.address || ""
+        };
+      }
+
+      function buildSubmitBody() {
+        var answersClone = {};
+        var identityFieldIds = ["guest_name", "guest_email", "guest_phone", "guest_property_address"];
+        for (var key in answers) {
+          if (answers.hasOwnProperty(key) && identityFieldIds.indexOf(key) === -1) {
+            answersClone[key] = answers[key];
+          }
+        }
+        answersClone.marketing_consent = consentCheck.checked;
+
+        var body = {
+          template_name: "thames_valley_rent",
+          consent: true,
+          submitted_at: new Date().toISOString(),
+          source: "vercel-frontend",
+          source_url: window.location.href,
+          answers: answersClone
+        };
+
+        if (guestMode) {
+          answersClone.guest_property_address = answers["guest_property_address"] || null;
+          body.guest = true;
+          body.identity = buildIdentityPayload();
+          body.token = "";
+          body.crm_configured = false;
+          body.email_skipped = true;
+        } else {
+          body.token = token;
+        }
+        return body;
+      }
+
+      function showSuccess(payload) {
+        var hero = '<div class="qv-hero"><h1>Quick enquiry form</h1><p class="qv-subtitle">Thank you — your answers are with our team.</p></div>';
+        var unlocked = payload && typeof payload.bookingUnlocked === 'boolean' ? payload.bookingUnlocked : null;
+        // A score-gated applicant gets no booking link and no email: tell them
+        // their answers are with the team, not that they should check an inbox.
+        var body = unlocked === false
+          ? '<div class="qv-success"><h2>Thank you</h2><p>We have received your details. Our team will review your enquiry and be in touch with the next steps.</p></div>'
+          : '<div class="qv-success"><h2>Please check your emails</h2><p>We have received your details and will get back to you with the next steps. Please check your inbox — and check your spam or junk folder too, in case our email lands there.</p></div>';
+        card.innerHTML = hero + body;
+      }
+
+      function submitAnswers() {
+        nextBtn.disabled = true;
+        backBtn.disabled = true;
+        nextBtn.textContent = "Submitting...";
+        setError("");
+
+        runtimeConfigReady.then(function () {
+          var submitUrl = buildSubmissionUrl();
+          if (!submitUrl) {
+            throw new Error(runtimeConfigError || "This questionnaire link is incomplete. Please use the full link from Thames Valley Estates.");
+          }
+
+          return window.fetch("/questionnaire/api/questionnaire-submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ payload: buildSubmitBody() }),
+            credentials: "same-origin"
+          });
+        }).then(function (response) {
+          if (!response.ok) {
+            return response.json().catch(function () {
+              return null;
+            }).then(function (errorPayload) {
+              var message = errorPayload && errorPayload.message
+                ? errorPayload.message
+                : "We could not submit your questionnaire right now. Please try again in a moment.";
+              throw new Error(message);
+            });
+          }
+           return response.json().then(function (payload) { showSuccess(payload); });
+        }).catch(function (error) {
+          nextBtn.disabled = false;
+          backBtn.disabled = false;
+          nextBtn.textContent = "Submit";
+          setError(error && error.message ? error.message : "We could not submit your questionnaire right now. Please try again in a moment.");
+        });
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (!validateCurrentQuestion()) {
+          return;
+        }
+
+        var visible = visibleQuestions();
+        if (currentIndex === visible.length - 1) {
+          if (!consentCheck.checked) {
+            setError("Please confirm the information provided is accurate before submitting.");
+            return;
+          }
+          submitAnswers();
+          return;
+        }
+
+        history.push(currentIndex);
+        currentIndex += 1;
+        render();
+      });
+
+      backBtn.addEventListener("click", function () {
+        if (history.length) {
+          currentIndex = history.pop();
+        } else if (currentIndex > 0) {
+          currentIndex -= 1;
+        }
+        render();
+      });
+
+
+      function loadFormSettings() {
+        return fetch('/questionnaire/api/forms-config', { cache: 'no-store', signal: AbortSignal.timeout(8000) }).then(function (response) {
+          if (!response.ok) throw new Error('Form settings unavailable');
+          return response.json();
+        }).then(function (config) {
+          if (Array.isArray(config.questions)) configuredQuestionOrder = config.questions.map(function (question) { return question.id; });
+          if (config.logo_url && /^(https:\/\/|data:image\/(png|jpeg|webp);base64,)/.test(config.logo_url)) {
+            var current = document.querySelector('.tve-header .tve-logo');
+            var logo = document.createElement('img');
+            logo.className = 'tve-logo'; logo.alt = 'Thames Valley Estates';
+            logo.style.cssText = 'width:auto;max-width:160px;max-height:44px;object-fit:contain';
+            logo.onload = function () { if (current) current.replaceWith(logo); };
+            logo.src = config.logo_url;
+          }
+          [QUESTIONS, IDENTITY_QUESTIONS].forEach(function (list) {
+            list.forEach(function (question) {
+              var saved = (config.questions || []).find(function (item) { return item.id === question.id; });
+              if (!saved) return;
+              ['label', 'subtitle', 'placeholder'].forEach(function (key) { if (typeof saved[key] === 'string') question[key] = saved[key]; });
+              (question.options || []).forEach(function (option) {
+                var choice = (saved.options || []).find(function (item) { return item.value === option.value; });
+                if (choice) option.label = choice.label;
+              });
+            });
+          });
+        }).catch(function () { /* Keep the built-in form available during an outage. */ });
+      }
+
+      runtimeConfigReady = Promise.all([loadRuntimeConfig(), loadFormSettings()]);
+      runtimeConfigReady.then(function () {
+        if (!runtimeConfig.questionnaireSubmitBaseUrl && token) {
+          showBanner(runtimeConfigError);
+        }
+        return loadAvailableProperties();
+      }).then(function () {
+        render();
+      });
+
+      render();
+    
+    document.addEventListener("input", function (e) {
+      var t = e.target;
+      if (t && t.classList && t.classList.contains("qv-stepper-range")) {
+        var field = t.getAttribute("data-field");
+        var val = parseInt(t.value, 10) || 0;
+        answers[field] = val;
+        var num = document.querySelector('.qv-stepper[data-field="' + field + '"] .qv-stepper-num') || document.querySelector(".qv-stepper-num");
+        if (num) num.textContent = val.toLocaleString();
+      }
+    });
+
+})();
+  </script>
+<script>(()=>{const original=window.fetch.bind(window);const send=event=>original('http://127.0.0.1:3003/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event})}).catch(()=>{});send('page_load');document.addEventListener('click',()=>send('click'),true);document.addEventListener('change',()=>send('change'),true);document.addEventListener('submit',()=>send('submit'),true);window.fetch=(...args)=>{send('fetch_start');return original(...args).then(response=>{send('fetch_end');return response},error=>{send('fetch_error');throw error})}})()</script>
+<script>(()=>{const original=window.fetch.bind(window);const send=event=>original('http://127.0.0.1:3003/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event})}).catch(()=>{});send('page_load');document.addEventListener('click',()=>send('click'),true);document.addEventListener('change',()=>send('change'),true);document.addEventListener('submit',()=>send('submit'),true);window.fetch=(...args)=>{send('fetch_start');return original(...args).then(response=>{send('fetch_end');return response},error=>{send('fetch_error');throw error})}})()</script>
+</body>
+</html>

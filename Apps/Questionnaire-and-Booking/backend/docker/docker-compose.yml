@@ -1,0 +1,286 @@
+name: tve-questionnaire-booking
+
+services:
+  app-function-logic:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: tve-app-function-logic
+    restart: unless-stopped
+    env_file:
+      - ../../backend/.env
+    ports:
+      - "127.0.0.1:${APP_FUNCTION_LOGIC_PORT:-8001}:8000"
+    environment:
+      TVE_AUTH_DISABLED: "false"
+      TVE_NOTIFICATION_MODE: local
+      TVE_DB_CONTACTS: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-contacts:5432/contacts
+      TVE_DB_ENQUIRIES: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-enquiries:5432/enquiries
+      TVE_DB_RESPONSES: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-responses:5432/responses
+      TVE_DB_TOKENS: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-tokens:5432/tokens
+      TVE_DB_SETTINGS: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-settings:5432/settings
+      TVE_SANDBOX_DB_CONTACTS: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_contacts
+      TVE_SANDBOX_DB_ENQUIRIES: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_enquiries
+      TVE_SANDBOX_DB_RESPONSES: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_responses
+      TVE_SANDBOX_DB_TOKENS: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_tokens
+      TVE_SANDBOX_DB_SETTINGS: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_settings
+      SANDBOX_FIXTURES_DIR: /app/fixtures
+    volumes:
+      - ../../Tools/fixtures:/app/fixtures:ro
+    depends_on:
+      pg-contacts:
+        condition: service_healthy
+      pg-enquiries:
+        condition: service_healthy
+      pg-responses:
+        condition: service_healthy
+      pg-tokens:
+        condition: service_healthy
+      pg-settings:
+        condition: service_healthy
+      pg-sandbox:
+        condition: service_healthy
+    networks: [app-edge, net-contacts, net-enquiries, net-responses, net-tokens, net-settings, net-sandbox]
+
+  imap-intake:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: tve-imap-intake
+    command: ["python", "-B", "-m", "app.workers.imap_intake"]
+    restart: unless-stopped
+    env_file:
+      - ../../backend/.env
+    environment:
+      TVE_DB_CONTACTS: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-contacts:5432/contacts
+      TVE_DB_ENQUIRIES: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-enquiries:5432/enquiries
+      TVE_DB_RESPONSES: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-responses:5432/responses
+      TVE_DB_TOKENS: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-tokens:5432/tokens
+      TVE_DB_SETTINGS: postgresql://${POSTGRES_USER:-sandbox}:${POSTGRES_PASSWORD:-sandbox-local-password}@pg-settings:5432/settings
+      TVE_SANDBOX_DB_CONTACTS: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_contacts
+      TVE_SANDBOX_DB_ENQUIRIES: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_enquiries
+      TVE_SANDBOX_DB_RESPONSES: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_responses
+      TVE_SANDBOX_DB_TOKENS: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_tokens
+      TVE_SANDBOX_DB_SETTINGS: postgresql://${SANDBOX_POSTGRES_USER:-tve_sandbox}:${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}@pg-sandbox:5432/sandbox_settings
+      SANDBOX_FIXTURES_DIR: /app/fixtures
+      TVE_IMAP_STATE_DIR: /var/lib/tve-imap
+    volumes:
+      - ../../Tools/fixtures:/app/fixtures:ro
+      - imap_checkpoint_data:/var/lib/tve-imap
+    depends_on:
+      pg-contacts:
+        condition: service_healthy
+      pg-enquiries:
+        condition: service_healthy
+      pg-responses:
+        condition: service_healthy
+      pg-tokens:
+        condition: service_healthy
+      pg-settings:
+        condition: service_healthy
+      mock-inbox:
+        condition: service_started
+      pg-sandbox:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    # Keep the image UID; drop only the capability bits this worker never
+    # uses. Hosts with a restrictive default seccomp profile fail to exec the
+    # interpreter when caps are dropped entirely.
+    cap_drop: [CHOWN, SETPCAP, NET_BIND_SERVICE, MKNOD]
+    networks: [app-isolated, app-edge, net-contacts, net-enquiries, net-responses, net-tokens, net-settings, net-sandbox]
+
+  # Sandbox-only: local mock SMTP + inspectable inbox. In production the
+  # worker talks to a real mailbox, so this is the one sandbox-labelled part.
+  mock-inbox:
+    image: axllent/mailpit:v1.27.0
+    container_name: tve-mock-inbox
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: 5000
+    volumes:
+      - mock_inbox_data:/data
+    networks: [app-isolated, app-edge]
+
+  web-frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    container_name: tve-web-frontend
+    restart: unless-stopped
+    environment:
+      APP_FUNCTION_LOGIC_URL: http://app-function-logic:8000
+      APP_LISTEN_HOST: 0.0.0.0
+      TVE_WEBHOOK_SECRET: ${TVE_WEBHOOK_SECRET:-sandbox-webhook-secret}
+    ports:
+      - "127.0.0.1:${BOOKING_HOST_PORT:-3000}:3000"
+      - "127.0.0.1:${QUESTIONNAIRE_HOST_PORT:-3001}:3001"
+      - "127.0.0.1:${DASHBOARD_HOST_PORT:-3002}:3002"
+    depends_on:
+      - app-function-logic
+    networks: [app-isolated, app-edge]
+
+  pg-contacts:
+    image: postgres:15-alpine
+    container_name: tve-pg-contacts
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: contacts
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sandbox-local-password}
+    volumes:
+      - pg_contacts_data:/var/lib/postgresql/data
+      - ./init-contacts/001-contacts.sql:/docker-entrypoint-initdb.d/001-contacts.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d contacts"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [net-contacts]
+
+  pg-enquiries:
+    image: postgres:15-alpine
+    container_name: tve-pg-enquiries
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: enquiries
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sandbox-local-password}
+    volumes:
+      - pg_enquiries_data:/var/lib/postgresql/data
+      - ./init-enquiries/001-enquiries.sql:/docker-entrypoint-initdb.d/001-enquiries.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d enquiries"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [net-enquiries]
+
+  pg-responses:
+    image: postgres:15-alpine
+    container_name: tve-pg-responses
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: responses
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sandbox-local-password}
+    volumes:
+      - pg_responses_data:/var/lib/postgresql/data
+      - ./init-responses/001-responses.sql:/docker-entrypoint-initdb.d/001-responses.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d responses"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [net-responses]
+
+  pg-tokens:
+    image: postgres:15-alpine
+    container_name: tve-pg-tokens
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tokens
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sandbox-local-password}
+    volumes:
+      - pg_tokens_data:/var/lib/postgresql/data
+      - ./init-tokens/001-tokens.sql:/docker-entrypoint-initdb.d/001-tokens.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d tokens"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [net-tokens]
+
+  pg-settings:
+    image: postgres:15-alpine
+    container_name: tve-pg-settings
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: settings
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sandbox-local-password}
+    volumes:
+      - pg_settings_data:/var/lib/postgresql/data
+      - ./init-settings/001-settings.sql:/docker-entrypoint-initdb.d/001-settings.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d settings"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [net-settings]
+
+  # A separate account, network and volume; it has no production DB privileges.
+  pg-sandbox:
+    image: postgres:15-alpine
+    container_name: tve-pg-sandbox
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sandbox_contacts
+      POSTGRES_USER: ${SANDBOX_POSTGRES_USER:-tve_sandbox}
+      POSTGRES_PASSWORD: ${SANDBOX_POSTGRES_PASSWORD:-sandbox-only-local-password}
+    volumes:
+      - pg_sandbox_data:/var/lib/postgresql/data
+      - ./init-sandbox/001-databases.sh:/docker-entrypoint-initdb.d/001-databases.sh:ro
+      - ./init-contacts:/schemas/contacts:ro
+      - ./init-enquiries:/schemas/enquiries:ro
+      - ./init-responses:/schemas/responses:ro
+      - ./init-tokens:/schemas/tokens:ro
+      - ./init-settings:/schemas/settings:ro
+      - ./init-sandbox/002-submissions.sql:/schemas/submissions.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d sandbox_settings"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [net-sandbox]
+
+volumes:
+  imap_checkpoint_data:
+    name: tve-imap-checkpoint-data
+  mock_inbox_data:
+    name: tve-mock-inbox-data
+  pg_contacts_data:
+    name: tve-pg-contacts-data
+  pg_enquiries_data:
+    name: tve-pg-enquiries-data
+  pg_responses_data:
+    name: tve-pg-responses-data
+  pg_tokens_data:
+    name: tve-pg-tokens-data
+  pg_settings_data:
+    name: tve-pg-settings-data
+  pg_sandbox_data:
+    name: tve-pg-sandbox-data
+
+networks:
+  app-isolated:
+    name: tve-app-isolated
+    driver: bridge
+    internal: true
+  app-edge:
+    name: tve-app-edge
+    driver: bridge
+  net-contacts:
+    name: tve-net-contacts
+    driver: bridge
+  net-enquiries:
+    name: tve-net-enquiries
+    driver: bridge
+  net-responses:
+    name: tve-net-responses
+    driver: bridge
+  net-tokens:
+    name: tve-net-tokens
+    driver: bridge
+  net-settings:
+    name: tve-net-settings
+    driver: bridge
+  net-sandbox:
+    name: tve-net-sandbox
+    driver: bridge
+    internal: true
